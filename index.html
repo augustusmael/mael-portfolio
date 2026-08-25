@@ -43,11 +43,6 @@
     gap:14px;
     text-align:center;
     background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    z-index:1001;
   }
   .ribbon b{font-weight:700;}
   .ribbon .pill{
@@ -61,7 +56,13 @@
   }
   .ribbon .pill:hover{transform:translateY(-1px);}
 
-  /* Nav — fixed header */
+  .site-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+  }
+
+  /* Nav */
   nav{
     display:flex;
     align-items:center;
@@ -69,12 +70,7 @@
     padding:22px 48px;
     max-width:1280px;
     margin:0 auto;
-    position:fixed;
-    top:52px;
-    left:0;
-    right:0;
     background:var(--cream);
-    z-index:1000;
     box-shadow:0 2px 14px rgba(30,28,24,.07);
   }
   .logo{
@@ -129,7 +125,7 @@
   .hero-top{
     max-width:980px;
     margin:0 auto;
-    padding:210px 32px 0;
+    padding:56px 32px 0;
     text-align:center;
   }
   .hero-top h1{
@@ -241,6 +237,15 @@
     .journey-page{ height:294px; }
     .jcard-caption{ font-size:12px; padding:8px 12px; left:10px; bottom:10px; right:10px; }
     .jcard-badge{ width:24px; height:24px; left:12px; bottom:-10px; }
+  }
+
+  @media(max-width:600px){
+    .ribbon{
+      flex-direction:column;
+      padding:14px 24px;
+      gap:8px;
+      font-size:13px;
+    }
   }
 
   /* Logos strip — "Leading brands choose" style */
@@ -694,6 +699,7 @@
 </head>
 <body>
 
+  <div class="site-header">
   <div class="ribbon">
     <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
     <a class="pill" href="#contact">Get In Touch</a>
@@ -713,6 +719,7 @@
       View Résumé
     </a>
   </nav>
+  </div>
 
   <section class="hero-top">
     <h1>Support built for the <span class="accent">automation</span> era</h1>
