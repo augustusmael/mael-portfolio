@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mael — Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6;
+    --paper:#FBF9F3;
+    --ink:#1E1C18;
+    --red:#E24E32;
+    --red-dark:#C93F26;
+    --blue:#AFC8DE;
+    --line:#D8D3C4;
+    --muted:#5B564C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 48px;}
+
+  /* Top ribbon */
+  .ribbon{
+    background:var(--red);
+    color:#fff;
+    font-size:15px;
+    letter-spacing:.02em;
+    padding:14px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    text-align:center;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:1001;
+  }
+  .ribbon b{font-weight:700;}
+  .ribbon .pill{
+    background:var(--paper);
+    color:var(--red-dark);
+    padding:9px 20px;
+    border-radius:999px;
+    font-weight:600;
+    white-space:nowrap;
+    transition:transform .15s ease;
+  }
+  .ribbon .pill:hover{transform:translateY(-1px);}
+
+  /* Nav — fixed header */
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 48px;
+    max-width:1280px;
+    margin:0 auto;
+    position:fixed;
+    top:52px;
+    left:0;
+    right:0;
+    background:var(--cream);
+    z-index:1000;
+    box-shadow:0 2px 14px rgba(30,28,24,.07);
+  }
+  .logo{
+    font-family:'Fraunces',serif;
+    font-size:38px;
+    font-weight:700;
+    color:var(--red);
+    letter-spacing:-.01em;
+  }
+  .logo span{color:var(--ink);}
+  .nav-links{
+    display:flex;
+    gap:20px;
+    list-style:none;
+    font-weight:800;
+    font-size:18px;
+  }
+  .nav-links li{display:flex;align-items:center;gap:5px;cursor:default;color:var(--ink);}
+  .nav-links li svg{opacity:.55;width:13px;height:13px;}
+  .track-btn{
+    background:var(--red);
+    color:#fff;
+    padding:17px 26px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .track-btn:hover{background:var(--red-dark);transform:translateY(-1px);}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:var(--blue);
+    color:var(--ink);
+    font-weight:700;
+    font-size:17px;
+    padding:20px 32px;
+    border-radius:999px;
+    margin-top:32px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn.solid{background:var(--red);color:#fff;}
+  .btn.solid:hover{background:var(--red-dark);}
+
+  /* Hero — centered, thin big serif, colored word */
+  .hero-top{
+    max-width:980px;
+    margin:0 auto;
+    padding:210px 32px 0;
+    text-align:center;
+  }
+  .hero-top h1{
+    font-size:84px;
+    line-height:1.05;
+    font-weight:400;
+    letter-spacing:-.02em;
+  }
+  .hero-top h1 .accent{color:var(--red);font-weight:600;}
+  .hero-top p{
+    margin:30px auto 0;
+    font-size:24px;
+    line-height:1.5;
+    color:var(--ink);
+    font-weight:400;
+    max-width:640px;
+  }
+  .hero-top .btn{margin-left:auto;margin-right:auto;}
+
+  /* Journey carousel */
+  .journey{
+    position:relative;
+    overflow:hidden;
+    padding:38px 0 13px;
+  }
+  .journey-viewport{
+    overflow:hidden;
+    width:100%;
+  }
+  .journey-pages{
+    display:flex;
+    will-change:transform;
+  }
+  .journey-page{
+    flex:0 0 100%;
+    position:relative;
+    height:410px;
+    container-type:size;
+  }
+  .journey-page svg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    overflow:visible;
+    z-index:0;
+  }
+  /* Dot is now positioned by JS via getPointAtLength (cx/cy), not CSS
+     offset-path — offset-path has spotty/no support in some browsers,
+     which is why the dot could vanish. .jdot-lead is the solid head,
+     .jdot-trail is the small hollow ring chasing well behind it. */
+  .jdot-lead, .jdot-trail{
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .jdot-lead{ fill:var(--red); }
+  .jdot-trail{ fill:none; stroke:var(--red); stroke-width:2.5; opacity:0; }
+  .jdot-trail.show, .jdot-lead.show{ opacity:1; }
+  .jdot-trail.show{ opacity:.45; }
+  .jline-node{ fill:var(--cream); stroke:#C7C0AC; stroke-width:2; }
+
+  /* Simple, elegant photo-style cards — a tinted surface with a large
+     faint glyph, a caption pill sitting on the bottom edge, and (on the
+     first card of each page) a small accent badge overlapping the corner,
+     echoing the reference site's plain-photo-plus-line composition. */
+  .jcard{
+    position:absolute;
+    border-radius:26px;
+    overflow:visible;
+    box-shadow:0 22px 48px rgba(30,28,24,.14);
+    z-index:1;
+  }
+  .jcard.size-a{ height:clamp(84px, 28cqh, 130px); aspect-ratio:4/3; }
+  .jcard.size-b{ height:clamp(85px, 30cqh, 150px); aspect-ratio:1/0.85; }
+  .jcard.size-c{ height:clamp(100px, 32cqh, 175px); aspect-ratio:16/10; }
+
+  .jcard-surface{
+    width:100%; height:100%;
+    border-radius:26px;
+    overflow:hidden;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--jc-bg, var(--paper));
+  }
+  .jcard-surface .glyph{ opacity:.24; color:var(--ink); }
+  .jcard.size-a .glyph{ font-size:clamp(22px, 11cqh, 40px); }
+  .jcard.size-b .glyph{ font-size:clamp(26px, 12cqh, 46px); }
+  .jcard.size-c .glyph{ font-size:clamp(30px, 13cqh, 54px); }
+  .jcard-caption{
+    position:absolute; left:16px; bottom:16px; right:16px;
+    background:rgba(251,249,243,.94);
+    color:var(--ink);
+    font-weight:700; font-size:14px;
+    line-height:1.25;
+    padding:9px 14px;
+    border-radius:14px;
+    box-shadow:0 8px 18px rgba(30,28,24,.1);
+  }
+  .jcard.end .jcard-caption{ background:var(--red); color:#fff; }
+  .jcard.end .glyph{ color:#fff; opacity:.35; }
+  .jcard-badge{
+    position:absolute;
+    width:32px; height:32px;
+    left:20px; bottom:-14px;
+    background:var(--red);
+    border-radius:9px;
+    box-shadow:0 10px 20px rgba(226,78,50,.35);
+  }
+
+  @media(max-width:700px){
+    .journey-page{ height:294px; }
+    .jcard-caption{ font-size:12px; padding:8px 12px; left:10px; bottom:10px; right:10px; }
+    .jcard-badge{ width:24px; height:24px; left:12px; bottom:-10px; }
+  }
+
+  /* Logos strip — "Leading brands choose" style */
+  .logos-strip{
+    padding:70px 48px 70px;
+    max-width:1280px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .logos-strip h3{
+    font-size:28px;
+    font-weight:400;
+    margin:0 0 48px;
+  }
+  .logos-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:32px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-size:16px;
+    color:var(--ink);
+  }
+
+  /* big statement banner */
+  .statement{
+    background:var(--red);
+    color:#fff;
+    padding:130px 48px;
+    text-align:center;
+  }
+  .statement h2{
+    font-size:56px;
+    font-weight:400;
+    line-height:1.28;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .statement b{font-weight:700;}
+  .reveal-word{
+    color:rgba(255,255,255,.4);
+    transition:color .5s ease;
+  }
+  .reveal-heading.in-view .reveal-word{ color:var(--ink); }
+
+  /* Tools strip title (kept from ops content) placed under statement */
+  .tools-strip{
+    padding:70px 48px 20px;
+    max-width:1280px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .tools-strip h3{ font-size:26px; font-weight:400; margin-bottom:40px; }
+  .tools-row{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:28px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; font-size:15px; opacity:.8;
+  }
+
+  /* Great products — heading then full-width media */
+  .great{
+    max-width:1280px;
+    margin:0 auto;
+    padding:100px 48px 0;
+    text-align:center;
+  }
+  .great h2{
+    font-size:52px;
+    font-weight:400;
+    line-height:1.2;
+    max-width:900px;
+    margin:0 auto 48px;
+  }
+  .great h2 .emph{
+    font-weight:700;
+    font-size:1.15em;
+  }
+  .great-media{
+    background:#141210;
+    border-radius:24px;
+    aspect-ratio:1180/620;
+    width:65%;
+    margin:0 auto;
+    overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    transform:scale(1);
+    transition:transform .6s cubic-bezier(.22,1,.36,1);
+  }
+  .great-media.in-view{ transform:scale(1.06); }
+  .great-media .glyph{font-size:120px;opacity:.25;color:#fff;}
+
+  /* Reinventing — 2 col, left text w/ checklist rows, right phone-style media */
+  .reinvent{
+    max-width:1280px;
+    margin:0 auto;
+    padding:120px 48px;
+    display:grid;
+    grid-template-columns:0.95fr 1.05fr;
+    gap:90px;
+    align-items:center;
+  }
+  .reinvent h2{
+    font-size:52px;
+    font-weight:400;
+    line-height:1.15;
+    letter-spacing:-.01em;
+  }
+  .reinvent-list{margin-top:36px;}
+  .reinvent-row{
+    all:unset;
+    box-sizing:border-box;
+    width:100%;
+    padding:28px 0;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:flex-start;
+    gap:18px;
+    cursor:pointer;
+  }
+  .reinvent-row:last-child{border-bottom:1px solid var(--line);}
+  .reinvent-marker-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    flex-shrink:0;
+  }
+  .reinvent-marker{
+    width:26px;height:26px;border-radius:50%;
+    border:2px solid var(--red);
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;
+    transition:background .25s ease;
+  }
+  .reinvent-vline{
+    width:2px;
+    background:var(--red);
+    flex:0 0 auto;
+    height:0;
+    margin-top:6px;
+    transition:height .4s ease;
+  }
+  .reinvent-row.open .reinvent-marker{background:var(--red);}
+  .reinvent-row.open .reinvent-marker svg{opacity:1;}
+  .reinvent-row.open .reinvent-vline{ height:100%; min-height:20px; }
+  .reinvent-marker svg{opacity:0;transition:opacity .2s ease;}
+  .reinvent-body h4{font-size:24px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:-.005em;}
+  .reinvent-copy-wrap{
+    display:grid;
+    grid-template-rows:0fr;
+    overflow:hidden;
+    transition:grid-template-rows .35s ease;
+  }
+  .reinvent-row.open .reinvent-copy-wrap{ grid-template-rows:1fr; }
+  .reinvent-copy-wrap > p{
+    overflow:hidden;
+    color:var(--muted);font-size:17px;line-height:1.6;max-width:460px;
+    margin-top:0;
+  }
+  .reinvent-row.open .reinvent-copy-wrap > p{ margin-top:10px; }
+  .reinvent-media{
+    border-radius:28px;
+    overflow:hidden;
+    aspect-ratio:1000/920;
+    background:var(--paper);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .reinvent-media .glyph{font-size:130px;opacity:.15;}
+
+  @media(max-width:900px){
+    .reinvent{grid-template-columns:1fr;gap:40px;}
+  }
+
+  /* Testimonials — centered heading, rows with orange left border, centered content */
+  .testimonials{
+    background:var(--blue);
+    padding:110px 48px 130px;
+  }
+  .testimonials-inner{max-width:1000px;margin:0 auto;text-align:center;}
+  .testimonials h2{
+    font-size:64px;
+    font-weight:400;
+    margin-bottom:70px;
+  }
+  .quote-block{
+    padding:44px 0;
+    border-top:1px solid rgba(30,28,24,.18);
+  }
+  .quote-block:last-child{border-bottom:1px solid rgba(30,28,24,.18);}
+  .quote-block-inner{
+    border-left:3px solid var(--red);
+    padding-left:32px;
+    display:inline-block;
+    text-align:left;
+    max-width:820px;
+  }
+  .quote-block .who{
+    font-weight:700;font-size:16px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink);opacity:.7;margin-bottom:18px;
+  }
+  .quote-block blockquote{
+    font-family:'Fraunces',serif;
+    font-size:28px;
+    line-height:1.45;
+    font-weight:400;
+  }
+  .quote-block .attribution{
+    margin-top:22px;
+    color:var(--red-dark);
+    font-weight:600;
+    font-size:15px;
+  }
+  .quote-block .attribution span{
+    display:block;
+    color:var(--ink);
+    font-weight:500;
+    opacity:.7;
+    font-size:14px;
+    margin-top:2px;
+  }
+
+  /* Reviews carousel — auto sliding every 3s */
+  .reviews{
+    padding:120px 0;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .reviews h2{
+    text-align:center;
+    font-size:52px;
+    font-weight:400;
+    margin-bottom:60px;
+    padding:0 48px;
+  }
+  .review-carousel{
+    overflow:hidden;
+    padding:4px 48px;
+  }
+  .review-track{
+    display:flex;
+    gap:24px;
+    transition:transform .6s cubic-bezier(.65,0,.35,1);
+    will-change:transform;
+  }
+  .review-card{
+    background:var(--paper);
+    border-radius:20px;
+    padding:32px;
+    border:1px solid var(--line);
+    flex:0 0 calc((100% - 48px)/3);
+    min-width:0;
+  }
+  .review-card .person{
+    display:flex;align-items:center;gap:14px;margin-bottom:18px;
+  }
+  .avatar{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--red);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:16px;
+    flex-shrink:0;
+  }
+  .person .name{font-weight:700;font-size:17px;}
+  .person .date{font-size:13px;color:var(--muted);}
+  .stars{color:#F5A623;letter-spacing:3px;margin-bottom:16px;font-size:15px;}
+  .review-card p{color:var(--ink);line-height:1.55;font-size:17px;}
+  .review-dots{
+    display:flex;justify-content:center;gap:8px;margin-top:40px;
+  }
+  .review-dots span{
+    width:8px;height:8px;border-radius:50%;background:var(--line);
+    transition:background .3s ease, transform .3s ease;
+  }
+  .review-dots span.active{background:var(--red);transform:scale(1.2);}
+
+  @media(max-width:900px){
+    .review-card{flex:0 0 calc(100% - 0px);}
+  }
+
+  /* Tech-powered feature: wavy connector card */
+  .tech-feature{
+    padding:80px 48px 20px;
+    max-width:1280px;
+    margin:0 auto;
+    position:relative;
+  }
+  .static-line-wrap{
+    position:relative;
+    min-height:420px;
+    display:flex;
+    align-items:flex-start;
+  }
+  .static-line{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+  }
+  .static-card{
+    position:relative;
+    z-index:1;
+    background:var(--paper);
+    border-radius:28px;
+    padding:56px 64px;
+    max-width:760px;
+    margin-left:130px;
+    border:1px solid var(--line);
+    transform:scale(1);
+    transition:transform .6s cubic-bezier(.22,1,.36,1);
+  }
+  .static-card.in-view{ transform:scale(1.045); }
+  .static-card h3{
+    font-size:38px;
+    font-weight:400;
+    line-height:1.2;
+    margin:24px 0 18px;
+    letter-spacing:-.015em;
+  }
+  .static-card p{
+    color:var(--muted);
+    font-size:18px;
+    line-height:1.65;
+    max-width:560px;
+  }
+  .static-card .btn{ margin-top:28px; }
+
+  @media(max-width:900px){
+    .static-card{ margin-left:0; max-width:100%; padding:40px 32px; }
+    .static-line{ display:none; }
+  }
+
+  /* Driver's-seat style feature */
+  .seat-feature{
+    background:#ECECE5;
+  }
+  .seat-feature-inner{
+    max-width:1280px;
+    margin:0 auto;
+    padding:120px 48px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:90px;
+    align-items:center;
+  }
+  .seat-text h2{
+    font-size:56px;
+    font-weight:400;
+    line-height:1.1;
+    letter-spacing:-.01em;
+  }
+  .seat-sub{
+    margin-top:22px;
+    font-size:19px;
+    color:var(--ink);
+  }
+  .seat-list{
+    margin-top:38px;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+  }
+  .seat-item{
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
+  .seat-icon{
+    width:58px;height:58px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .seat-item span{font-weight:700;font-size:19px;}
+  .seat-media{
+    border-radius:24px;
+    overflow:hidden;
+    aspect-ratio:900/700;
+    background:var(--paper);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .seat-media img{width:100%;height:100%;object-fit:cover;}
+
+  @media(max-width:900px){
+    .seat-feature-inner{grid-template-columns:1fr;gap:40px;}
+    .seat-text h2{font-size:38px;}
+  }
+
+  /* footer */
+  footer{
+    background:var(--cream);
+    padding:90px 48px 44px;
+    border-top:1px solid var(--line);
+  }
+  .footer-inner{
+    max-width:1280px;margin:0 auto;
+    display:grid;
+    grid-template-columns:1.3fr repeat(5,1fr);
+    gap:32px;
+  }
+  .footer-brand .logo{margin-bottom:18px;}
+  .footer-brand p{color:var(--muted);font-size:16px;margin-bottom:24px;}
+  .socials{display:flex;gap:14px;}
+  .socials a{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+  }
+  .footer-col h4{font-size:17px;font-weight:700;margin-bottom:22px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:16px;}
+  .footer-col a{color:var(--ink);font-size:15px;}
+  .footer-col a:hover{color:var(--red);}
+  .footer-cta{
+    max-width:1280px;margin:70px auto 0;
+    padding-top:44px;border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:20px;
+  }
+  .footer-cta h4{font-size:26px;font-weight:400;font-family:'Fraunces',serif;margin-bottom:8px;}
+  .footer-cta p{color:var(--muted);font-size:16px;}
+  .footer-cta .btn{margin-top:0;background:var(--ink);color:#fff;}
+  .footer-bottom{
+    max-width:1280px;margin:44px auto 0;
+    padding-top:26px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  .footer-bottom .links{display:flex;gap:26px;flex-wrap:wrap;}
+  .footer-bottom a{color:var(--muted);}
+  .footer-bottom a:hover{color:var(--ink);}
+
+  @media(max-width:900px){
+    .nav-links{display:none;}
+    .hero-top h1{font-size:44px;}
+    .great h2{font-size:32px;}
+    .statement h2{font-size:32px;}
+    .testimonials h2{font-size:32px;}
+    .reviews h2{font-size:32px;}
+    .seat-text h2{font-size:34px;}
+    .footer-inner{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="ribbon">
+    <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
+    <a class="pill" href="#contact">Get In Touch</a>
+  </div>
+
+  <nav>
+    <div class="logo">mael<span>.</span></div>
+    <ul class="nav-links">
+      <li>Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+      <li>Experience <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+      <li>Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+      <li>About <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+      <li>Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+    </ul>
+    <a class="track-btn" href="#contact">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      View Résumé
+    </a>
+  </nav>
+
+  <section class="hero-top">
+    <h1>Support built for the <span class="accent">automation</span> era</h1>
+    <p>Make operations work better for everybody.</p>
+    <a class="btn solid" href="#contact">See how I can help&nbsp;→</a>
+  </section>
+
+  <section class="journey" aria-label="How a task moves through my process">
+    <div class="journey-viewport">
+      <div class="journey-pages" id="journeyPages">
+
+        <div class="journey-page" data-page="0">
+          <svg viewBox="0 0 1300 640" preserveAspectRatio="none" fill="none">
+            <path class="jline" d="M -50 580 L 250 580 C 350 580 350 90 450 90 L 750 90 C 850 90 850 350 950 350 L 1350 350"
+              stroke="#C7C0AC" stroke-width="2" fill="none"/>
+            <circle class="jline-node" r="6" cx="0" cy="580"/>
+            <circle class="jline-node" r="6" cx="1300" cy="350"/>
+            <circle class="jdot-trail" r="7" cx="-50" cy="580"/>
+            <circle class="jdot-lead" r="7" cx="-50" cy="580"/>
+          </svg>
+          <div class="jcard size-a" style="left:6%; top:64%; --jc-bg:#EFE4D6;">
+            <div class="jcard-badge"></div>
+            <div class="jcard-surface"><span class="glyph">✉</span></div>
+            <div class="jcard-caption">Task comes in</div>
+          </div>
+          <div class="jcard size-b" style="left:37%; top:3%; --jc-bg:#E3E9EF;">
+            <div class="jcard-surface"><span class="glyph">🗂</span></div>
+            <div class="jcard-caption">Logged &amp; categorized</div>
+          </div>
+          <div class="jcard size-c" style="left:60%; top:42%; --jc-bg:#F4E3DD;">
+            <div class="jcard-surface"><span class="glyph">☑</span></div>
+            <div class="jcard-caption">Scoped &amp; prioritized</div>
+          </div>
+        </div>
+
+        <div class="journey-page" data-page="1">
+          <svg viewBox="0 0 1300 640" preserveAspectRatio="none" fill="none">
+            <path class="jline" d="M -50 350 L 250 350 C 350 350 350 580 450 580 L 750 580 C 850 580 850 90 950 90 L 1350 90"
+              stroke="#C7C0AC" stroke-width="2" fill="none"/>
+            <circle class="jline-node" r="6" cx="0" cy="350"/>
+            <circle class="jline-node" r="6" cx="1300" cy="90"/>
+            <circle class="jdot-trail" r="7" cx="-50" cy="350"/>
+            <circle class="jdot-lead" r="7" cx="-50" cy="350"/>
+          </svg>
+          <div class="jcard size-a" style="left:6%; top:36%; --jc-bg:#E3E9EF;">
+            <div class="jcard-badge"></div>
+            <div class="jcard-surface"><span class="glyph">⚙</span></div>
+            <div class="jcard-caption">Automated where possible</div>
+          </div>
+          <div class="jcard size-b" style="left:37%; top:64%; --jc-bg:#F4E3DD;">
+            <div class="jcard-surface"><span class="glyph">👁</span></div>
+            <div class="jcard-caption">Manual review</div>
+          </div>
+          <div class="jcard size-c" style="left:60%; top:3%; --jc-bg:#EFE4D6;">
+            <div class="jcard-surface"><span class="glyph">◔</span></div>
+            <div class="jcard-caption">QA &amp; calibration check</div>
+          </div>
+        </div>
+
+        <div class="journey-page" data-page="2">
+          <svg viewBox="0 0 1300 640" preserveAspectRatio="none" fill="none">
+            <path class="jline" d="M -50 90 L 250 90 C 350 90 350 350 450 350 L 750 350 C 850 350 850 580 950 580 L 1350 580"
+              stroke="#C7C0AC" stroke-width="2" fill="none"/>
+            <circle class="jline-node" r="6" cx="0" cy="90"/>
+            <circle class="jline-node" r="6" cx="1300" cy="580"/>
+            <circle class="jdot-trail" r="7" cx="-50" cy="90"/>
+            <circle class="jdot-lead" r="7" cx="-50" cy="90"/>
+          </svg>
+          <div class="jcard size-a" style="left:6%; top:3%; --jc-bg:#F4E3DD;">
+            <div class="jcard-badge"></div>
+            <div class="jcard-surface"><span class="glyph">📊</span></div>
+            <div class="jcard-caption">Compiled &amp; summarized</div>
+          </div>
+          <div class="jcard size-b" style="left:37%; top:36%; --jc-bg:#EFE4D6;">
+            <div class="jcard-surface"><span class="glyph">💬</span></div>
+            <div class="jcard-caption">Client reviewed</div>
+          </div>
+          <div class="jcard size-c end" style="left:60%; top:64%; --jc-bg:var(--red);">
+            <div class="jcard-surface"><span class="glyph">✓</span></div>
+            <div class="jcard-caption">Delivered, on time</div>
+          </div>
+        </div>
+
+        <!-- seamless-loop clone of page 0 -->
+        <div class="journey-page" data-page="clone0">
+          <svg viewBox="0 0 1300 640" preserveAspectRatio="none" fill="none">
+            <path class="jline" d="M -50 580 L 250 580 C 350 580 350 90 450 90 L 750 90 C 850 90 850 350 950 350 L 1350 350"
+              stroke="#C7C0AC" stroke-width="2" fill="none"/>
+            <circle class="jline-node" r="6" cx="0" cy="580"/>
+            <circle class="jline-node" r="6" cx="1300" cy="350"/>
+            <circle class="jdot-trail" r="7" cx="-50" cy="580"/>
+            <circle class="jdot-lead" r="7" cx="-50" cy="580"/>
+          </svg>
+          <div class="jcard size-a" style="left:6%; top:64%; --jc-bg:#EFE4D6;">
+            <div class="jcard-badge"></div>
+            <div class="jcard-surface"><span class="glyph">✉</span></div>
+            <div class="jcard-caption">Task comes in</div>
+          </div>
+          <div class="jcard size-b" style="left:37%; top:3%; --jc-bg:#E3E9EF;">
+            <div class="jcard-surface"><span class="glyph">🗂</span></div>
+            <div class="jcard-caption">Logged &amp; categorized</div>
+          </div>
+          <div class="jcard size-c" style="left:60%; top:42%; --jc-bg:#F4E3DD;">
+            <div class="jcard-surface"><span class="glyph">☑</span></div>
+            <div class="jcard-caption">Scoped &amp; prioritized</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="logos-strip">
+    <h3>Tools &amp; platforms I work in</h3>
+    <div class="logos-row">
+      <div>Google Sheets</div>
+      <div>Apps Script</div>
+      <div>Notion</div>
+      <div>Slack</div>
+      <div>Zendesk</div>
+    </div>
+  </section>
+
+  <section class="statement">
+    <h2 class="reveal-heading" id="revealHeading">I <span class="reveal-word" style="--d:0">make</span> <span class="reveal-word" style="--d:1">operations</span> <span class="reveal-word" style="--d:2">&amp;</span> <span class="reveal-word" style="--d:3"><b>automation</b></span> <span class="reveal-word" style="--d:4">work</span> <span class="reveal-word" style="--d:5">better</span> for everybody.</h2>
+  </section>
+
+  <section class="great">
+    <h2>Great support deserves a <span class="emph">great follow-through.</span></h2>
+    <div class="great-media" id="greatMedia">
+      <div class="glyph">⚙︎</div>
+    </div>
+  </section>
+
+  <section class="reinvent">
+    <div>
+      <h2>Reinventing support for growing teams</h2>
+      <div class="reinvent-list" id="reinventList">
+        <button class="reinvent-row open" type="button" onclick="toggleReinvent(this)">
+          <div class="reinvent-marker-col">
+            <div class="reinvent-marker">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="reinvent-vline"></div>
+          </div>
+          <div class="reinvent-body">
+            <h4>Industry-leading follow-through.</h4>
+            <div class="reinvent-copy-wrap">
+              <p>Consistently closing tasks accurately and on time, with QA rigor carried over from enterprise calibration work.</p>
+            </div>
+          </div>
+        </button>
+        <button class="reinvent-row" type="button" onclick="toggleReinvent(this)">
+          <div class="reinvent-marker-col">
+            <div class="reinvent-marker">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="reinvent-vline"></div>
+          </div>
+          <div class="reinvent-body">
+            <h4>Simple, transparent reporting.</h4>
+            <div class="reinvent-copy-wrap">
+              <p>Clear, client-ready reporting delivered on a rhythm you can count on — no digging for status.</p>
+            </div>
+          </div>
+        </button>
+        <button class="reinvent-row" type="button" onclick="toggleReinvent(this)">
+          <div class="reinvent-marker-col">
+            <div class="reinvent-marker">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="reinvent-vline"></div>
+          </div>
+          <div class="reinvent-body">
+            <h4>Exceptional client experience.</h4>
+            <div class="reinvent-copy-wrap">
+              <p>Personalized support and real-time updates, so you're never left wondering where things stand.</p>
+            </div>
+          </div>
+        </button>
+      </div>
+      <a class="btn solid" href="#contact">Learn more&nbsp;→</a>
+    </div>
+    <div class="reinvent-media">
+      <div class="glyph">◔</div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="testimonials-inner">
+      <h2>Trusted by the teams I've supported</h2>
+      <div class="quote-block">
+        <div class="quote-block-inner">
+          <div class="who">Operations Manager</div>
+          <blockquote>"Mael brought structure to a process that had none. Turnaround times dropped and reporting finally made sense."</blockquote>
+          <div class="attribution">Team Lead<span>Client feedback</span></div>
+        </div>
+      </div>
+      <div class="quote-block">
+        <div class="quote-block-inner">
+          <div class="who">Team Supervisor</div>
+          <blockquote>"Calibration sessions became genuinely useful once Mael took them over — clear criteria, consistent scoring."</blockquote>
+          <div class="attribution">QA Partner<span>Client feedback</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews" id="contact">
+    <h2>Let's work together</h2>
+    <div class="review-carousel">
+      <div class="review-track" id="reviewTrack">
+        <div class="review-card">
+          <div class="person">
+            <div class="avatar">O</div>
+            <div><div class="name">Ops &amp; Automation</div><div class="date">Virtual Assistant</div></div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p>Process mapping, SOP creation, dashboard upkeep, and automation of repetitive admin work.</p>
+        </div>
+        <div class="review-card">
+          <div class="person">
+            <div class="avatar">Q</div>
+            <div><div class="name">Quality &amp; Reporting</div><div class="date">Subject Matter Expert</div></div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p>KPI monitoring, calibration frameworks, and client-ready reporting built from experience, not templates.</p>
+        </div>
+        <div class="review-card">
+          <div class="person">
+            <div class="avatar">M</div>
+            <div><div class="name">Get in touch</div><div class="date">Open to remote roles</div></div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p>Based in the Philippines, available for remote engagements across time zones.</p>
+        </div>
+        <div class="review-card">
+          <div class="person">
+            <div class="avatar">S</div>
+            <div><div class="name">Systems Support</div><div class="date">Process Design</div></div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p>Mapping messy workflows into clean, repeatable SOPs that teams actually follow.</p>
+        </div>
+        <div class="review-card">
+          <div class="person">
+            <div class="avatar">C</div>
+            <div><div class="name">Calibration &amp; QA</div><div class="date">Quality Lead</div></div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p>Bringing enterprise-grade scoring rigor to teams that need consistent, defensible QA.</p>
+        </div>
+      </div>
+    </div>
+    <div class="review-dots" id="reviewDots"></div>
+  </section>
+
+  <section class="tech-feature" aria-label="What working together looks like">
+    <div class="static-line-wrap">
+      <svg class="static-line" viewBox="0 0 1180 620" preserveAspectRatio="none" fill="none">
+        <path d="M -20 30
+                 L 60 30
+                 C 100 30 100 90 100 130
+                 L 100 470
+                 C 100 540 100 590 160 590
+                 L 300 590"
+          stroke="#C7C0AC" stroke-width="2" fill="none"/>
+        <circle cx="100" cy="130" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+        <circle cx="100" cy="240" r="7" fill="#E24E32"/>
+        <path d="M 1000 590 L 1200 590 C 1240 590 1240 470 1240 430 L 1240 90"
+          stroke="#C7C0AC" stroke-width="2" fill="none"/>
+        <circle cx="1000" cy="590" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+      </svg>
+
+      <div class="static-card">
+        <svg width="90" height="58" viewBox="0 0 200 130" fill="none">
+          <rect x="20" y="55" width="140" height="45" rx="14" fill="#EFF3F7" stroke="#1E1C18" stroke-width="2.5"/>
+          <path d="M35 55 L55 25 H135 L155 55" stroke="#1E1C18" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+          <circle cx="55" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
+          <circle cx="130" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
+          <path d="M165 30 L170 20 M175 35 L182 28" stroke="#E24E32" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <h3>Systems-first support for growing teams</h3>
+        <p>With process and follow-through at the forefront, I handle QA, reporting, and day-to-day operations so your team can move faster with less overhead.</p>
+        <a class="btn" href="#contact">Learn More&nbsp;→</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="seat-feature">
+    <div class="seat-feature-inner">
+      <div class="seat-text">
+        <h2>Mael puts you in the driver's seat.</h2>
+        <p class="seat-sub">When you bring me in, you're still in control.</p>
+        <div class="seat-list">
+          <div class="seat-item">
+            <div class="seat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="3" stroke="#1E1C18" stroke-width="1.7"/><path d="M3 10h18" stroke="#1E1C18" stroke-width="1.7"/><circle cx="7" cy="14.5" r="1" fill="#1E1C18"/></svg>
+            </div>
+            <span>Know the scope and timeline in advance.</span>
+          </div>
+          <div class="seat-item">
+            <div class="seat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#1E1C18" stroke-width="1.7"/><path d="M4 9h16M8 2v4M16 2v4" stroke="#1E1C18" stroke-width="1.7"/></svg>
+            </div>
+            <span>Set a reporting cadence that works for you.</span>
+          </div>
+          <div class="seat-item">
+            <div class="seat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="2.6" stroke="#1E1C18" stroke-width="1.7"/><path d="M12 21c4-4.5 7-8 7-11.5A7 7 0 0 0 5 9.5C5 13 8 16.5 12 21z" stroke="#1E1C18" stroke-width="1.7"/></svg>
+            </div>
+            <span>Always know exactly where things stand.</span>
+          </div>
+        </div>
+        <a class="btn solid" href="#contact">Work With Me&nbsp;→</a>
+      </div>
+      <div class="seat-media">
+        <div class="glyph" style="font-size:100px;opacity:.15;">⚙</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">mael<span>.</span></div>
+        <p>Operations, quality, and automation — delivered with care.</p>
+        <div class="socials">
+          <a href="#">in</a>
+          <a href="#">✉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul><li><a href="#">Ops Support</a></li><li><a href="#">Automation</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Work</h4>
+        <ul><li><a href="#">Case Studies</a></li><li><a href="#">Projects</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul><li><a href="#">Background</a></li><li><a href="#">Résumé</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul><li><a href="#">Email</a></li><li><a href="#">LinkedIn</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul><li><a href="#">Blog</a></li><li><a href="#">Résumé PDF</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-cta">
+      <div>
+        <h4>Let's talk</h4>
+        <p>Open to remote engagements across time zones.</p>
+      </div>
+      <a class="btn" href="#contact">Get In Touch</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mael. Portfolio site.</span>
+      <div class="links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const revealHeading = document.getElementById('revealHeading');
+    if(revealHeading){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            revealHeading.classList.add('in-view');
+          } else {
+            revealHeading.classList.remove('in-view');
+          }
+        });
+      }, { threshold: 0.5 });
+      io.observe(revealHeading);
+    }
+
+    // Great-media scale emphasis on scroll into view
+    const greatMedia = document.getElementById('greatMedia');
+    if(greatMedia){
+      const io2 = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          greatMedia.classList.toggle('in-view', entry.isIntersecting);
+        });
+      }, { threshold: 0.5 });
+      io2.observe(greatMedia);
+    }
+
+    // "Systems-first support" card — subtle zoom in as it scrolls into
+    // view, zoom back out as it scrolls out (works scrolling either way).
+    const staticCard = document.querySelector('.static-card');
+    if(staticCard){
+      const io3 = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          staticCard.classList.toggle('in-view', entry.isIntersecting);
+        });
+      }, { threshold: 0.5 });
+      io3.observe(staticCard);
+    }
+
+    // Reinventing bullets — accordion, only one open at a time
+    function toggleReinvent(btn){
+      const list = btn.closest('.reinvent-list');
+      const wasOpen = btn.classList.contains('open');
+      list.querySelectorAll('.reinvent-row').forEach(r=> r.classList.remove('open'));
+      if(!wasOpen){ btn.classList.add('open'); }
+    }
+
+    // Journey: a lead dot travels along the current page's path (positioned
+    // each frame via SVG getPointAtLength, not CSS offset-path — offset-path
+    // isn't reliably supported everywhere, which was why the dot could
+    // disappear). A small hollow trail dot chases ~7px behind the lead dot
+    // along the path. Once the lead dot reaches the end, the page swipes to
+    // the next one and the dot restarts. A clone of page 0 is appended so
+    // the loop never visibly resets — only continuous leftward motion.
+    (function(){
+      const pagesWrap = document.getElementById('journeyPages');
+      if(!pagesWrap) return;
+      const pages = Array.from(pagesWrap.children);
+      const total = pages.length;
+      let current = 0;
+
+      const DOT_DURATION = 3000; // ms for the dot to travel one page's path
+      const TRAIL_GAP = 60; // px along the path between lead and trail dot — far enough to read as a distinct chasing ring, not glued to the lead dot
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function getDotEls(i){
+        const page = pages[i];
+        return {
+          path: page.querySelector('.jline'),
+          lead: page.querySelector('.jdot-lead'),
+          trail: page.querySelector('.jdot-trail')
+        };
+      }
+
+      function placeAt(el, path, dist){
+        const len = path.getTotalLength();
+        const p = path.getPointAtLength(Math.max(0, Math.min(len, dist)));
+        el.setAttribute('cx', p.x);
+        el.setAttribute('cy', p.y);
+      }
+
+      function resetDot(i){
+        const { path, lead, trail } = getDotEls(i);
+        if(!path || !lead || !trail) return;
+        lead.classList.remove('show');
+        trail.classList.remove('show');
+        placeAt(lead, path, 0);
+        placeAt(trail, path, 0);
+      }
+
+      function animateDot(i, onDone){
+        const { path, lead, trail } = getDotEls(i);
+        if(!path || !lead || !trail){ onDone(); return; }
+        const len = path.getTotalLength();
+
+        if(prefersReduced){
+          placeAt(lead, path, len);
+          placeAt(trail, path, Math.max(0, len - TRAIL_GAP));
+          lead.classList.add('show');
+          trail.classList.add('show');
+          setTimeout(onDone, 500);
+          return;
+        }
+
+        lead.classList.add('show');
+        trail.classList.add('show');
+        let start = null;
+
+        function frame(ts){
+          if(start === null) start = ts;
+          const progress = Math.min(1, (ts - start) / DOT_DURATION);
+          const dist = len * progress;
+          placeAt(lead, path, dist);
+          placeAt(trail, path, dist - TRAIL_GAP);
+          if(progress < 1){
+            requestAnimationFrame(frame);
+          } else {
+            setTimeout(onDone, 250);
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function advance(i){
+        const next = i + 1;
+        pagesWrap.style.transition = 'transform .7s cubic-bezier(.65,0,.35,1)';
+        pagesWrap.style.transform = `translateX(-${next * 100}%)`;
+        current = next;
+
+        function onEnd(e){
+          if(e.propertyName !== 'transform') return;
+          pagesWrap.removeEventListener('transitionend', onEnd);
+          if(current === total - 1){
+            pagesWrap.style.transition = 'none';
+            pagesWrap.style.transform = 'translateX(0%)';
+            void pagesWrap.offsetWidth;
+            current = 0;
+          }
+          resetDot(current);
+          requestAnimationFrame(()=> animateDot(current, ()=> advance(current)));
+        }
+        pagesWrap.addEventListener('transitionend', onEnd);
+      }
+
+      resetDot(current);
+      animateDot(current, ()=> advance(current));
+    })();
+
+    // Auto-sliding review carousel — advances every 3 seconds
+    (function(){
+      const track = document.getElementById('reviewTrack');
+      const dotsWrap = document.getElementById('reviewDots');
+      if(!track || !dotsWrap) return;
+      const cards = Array.from(track.children);
+      const total = cards.length;
+      let visible = 3;
+      function getVisible(){
+        return window.innerWidth <= 900 ? 1 : 3;
+      }
+      let index = 0;
+
+      function buildDots(){
+        dotsWrap.innerHTML = '';
+        const pages = Math.max(1, total - getVisible() + 1);
+        for(let i=0;i<pages;i++){
+          const d = document.createElement('span');
+          if(i===index) d.classList.add('active');
+          dotsWrap.appendChild(d);
+        }
+      }
+
+      function update(){
+        visible = getVisible();
+        const cardWidth = cards[0].getBoundingClientRect().width;
+        const gap = 24;
+        const maxIndex = Math.max(0, total - visible);
+        if(index > maxIndex) index = 0;
+        track.style.transform = `translateX(-${index * (cardWidth + gap)}px)`;
+        Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===index));
+      }
+
+      buildDots();
+      update();
+
+      setInterval(()=>{
+        visible = getVisible();
+        const maxIndex = Math.max(0, total - visible);
+        index = index >= maxIndex ? 0 : index + 1;
+        update();
+      }, 3000);
+
+      window.addEventListener('resize', ()=>{
+        buildDots();
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
