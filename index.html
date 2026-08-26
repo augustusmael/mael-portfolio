@@ -27,6 +27,7 @@
     background:var(--cream);
     color:var(--ink);
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
   h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400;}
   a{text-decoration:none;color:inherit;}
@@ -503,6 +504,7 @@
     letter-spacing:-.01em;
   }
   .reinvent-list{margin-top:36px;}
+  .reinvent-mobile{ display:none; }
   .reinvent-row{
     all:unset;
     box-sizing:border-box;
@@ -564,12 +566,101 @@
     box-shadow:var(--shadow-sm);
     display:flex;align-items:center;justify-content:center;
   }
-  .reinvent-media .glyph{font-size:130px;opacity:.15;}
+  .reinvent-media .glyph{
+    font-size:130px;
+    opacity:.15;
+    transition:opacity .2s ease, transform .3s ease;
+  }
+  .reinvent-media .glyph.fading{
+    opacity:0;
+    transform:scale(.92);
+  }
 
   @media(max-width:900px){
-    .reinvent{grid-template-columns:1fr;gap:40px;}
+    .reinvent{
+      grid-template-columns:1fr;
+      gap:40px;
+      padding:60px 24px;
+      max-width:100%;
+      overflow-x:hidden;
+    }
+    .reinvent > *{ min-width:0; }
+    .reinvent h2{
+      font-size:32px;
+      line-height:1.2;
+      overflow-wrap:break-word;
+    }
     .great{padding-left:24px;padding-right:24px;}
     .great-media{width:100%;}
+
+    .reinvent-list{ display:none; }
+    .reinvent-mobile{
+      display:block;
+      margin-top:8px;
+      width:100%;
+      max-width:100%;
+      overflow:hidden;
+    }
+    .reinvent-pills{
+      display:flex;
+      overflow-x:auto;
+      overflow-y:hidden;
+      gap:12px;
+      width:auto;
+      margin:0 -24px;
+      padding:4px 24px 10px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      scroll-snap-type:x proximity;
+    }
+    .reinvent-pills::-webkit-scrollbar{ display:none; }
+    .reinvent-pill{
+      all:unset;
+      box-sizing:border-box;
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      background:var(--paper);
+      border:1px solid var(--ink);
+      border-radius:var(--radius);
+      padding:9px 16px 9px 9px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:var(--shadow-sm);
+      transition:background .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .reinvent-pill:active{ transform:translate(1px,1px); box-shadow:none; }
+    .reinvent-pill.active{ background:#ECECE5; }
+    .reinvent-pill-icon{
+      width:20px;height:20px;
+      border-radius:50%;
+      border:2px solid var(--red);
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      transition:background .2s ease;
+    }
+    .reinvent-pill-icon svg{ width:9px; height:8px; }
+    .reinvent-pill.active .reinvent-pill-icon{ background:var(--red); }
+    .reinvent-pill-icon svg{ opacity:.4; }
+    .reinvent-pill.active .reinvent-pill-icon svg{ opacity:1; }
+    .reinvent-mobile-desc{
+      margin-top:22px;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.6;
+      transition:opacity .18s ease;
+    }
+    .reinvent-mobile-desc.fading{ opacity:0; }
+
+    .reinvent-media{
+      width:100%;
+      aspect-ratio:16/11;
+      margin-top:8px;
+    }
+    .reinvent-media .glyph{ font-size:clamp(70px, 22vw, 110px); }
   }
 
   /* Testimonials — centered heading, rows with orange left border, centered content */
@@ -806,7 +897,8 @@
   .seat-media img{width:100%;height:100%;object-fit:cover;}
 
   @media(max-width:900px){
-    .seat-feature-inner{grid-template-columns:1fr;gap:40px;}
+    .seat-feature-inner{grid-template-columns:1fr;gap:28px;}
+    .seat-media{order:-1;}
     .seat-text h2{font-size:38px;}
   }
 
@@ -857,11 +949,13 @@
   @media(max-width:900px){
     /* Testimonials: disable the sticky-lock effect and turn the quotes
        into a horizontally swipeable carousel instead */
+    .testimonials{ padding:48px 0 36px; }
     .testimonials h2{
       position:static;
       padding:0;
-      margin-bottom:32px;
+      margin-bottom:26px;
       background:transparent;
+      font-size:34px;
     }
     .testimonials-quotes{
       display:flex;
@@ -875,7 +969,7 @@
     }
     .testimonials-quotes::-webkit-scrollbar{ display:none; }
     .testimonials .quote-block{
-      flex:0 0 86%;
+      flex:0 0 92%;
       scroll-snap-align:center;
       border:none;
       background:transparent;
@@ -888,7 +982,13 @@
       padding-left:18px;
       max-width:none;
     }
-    .testimonials blockquote{ font-size:20px; }
+    .testimonials blockquote{
+      font-size:26px;
+      font-weight:300;
+      line-height:1.35;
+    }
+    .testimonials .who{ font-size:13px; }
+    .testimonials .attribution{ font-size:14px; }
 
     .testimonials-dots{
       display:flex;
@@ -912,7 +1012,7 @@
     .hero-top h1{font-size:44px;}
     .great h2{font-size:32px;}
     .statement h2{font-size:32px;}
-    .testimonials h2{font-size:32px;}
+    /* testimonials h2 sizing now handled in the dedicated mobile block above */
     .reviews h2{font-size:32px;}
     .seat-text h2{font-size:34px;}
     .footer-inner{grid-template-columns:1fr 1fr;}
@@ -1161,7 +1261,7 @@
     <div>
       <h2>Reinventing support for growing teams</h2>
       <div class="reinvent-list" id="reinventList">
-        <button class="reinvent-row open" type="button" onclick="toggleReinvent(this)">
+        <button class="reinvent-row open" type="button" data-glyph="◔" onclick="toggleReinvent(this)">
           <div class="reinvent-marker-col">
             <div class="reinvent-marker">
               <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1175,7 +1275,7 @@
             </div>
           </div>
         </button>
-        <button class="reinvent-row" type="button" onclick="toggleReinvent(this)">
+        <button class="reinvent-row" type="button" data-glyph="📊" onclick="toggleReinvent(this)">
           <div class="reinvent-marker-col">
             <div class="reinvent-marker">
               <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1189,7 +1289,7 @@
             </div>
           </div>
         </button>
-        <button class="reinvent-row" type="button" onclick="toggleReinvent(this)">
+        <button class="reinvent-row" type="button" data-glyph="💬" onclick="toggleReinvent(this)">
           <div class="reinvent-marker-col">
             <div class="reinvent-marker">
               <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1204,10 +1304,35 @@
           </div>
         </button>
       </div>
+
+      <div class="reinvent-mobile" id="reinventMobile">
+        <div class="reinvent-pills" id="reinventPills">
+          <button class="reinvent-pill active" type="button" data-desc="Consistently closing tasks accurately and on time, with QA rigor carried over from enterprise calibration work." data-glyph="◔">
+            <span class="reinvent-pill-icon">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            Industry-leading follow-through.
+          </button>
+          <button class="reinvent-pill" type="button" data-desc="Clear, client-ready reporting delivered on a rhythm you can count on — no digging for status." data-glyph="📊">
+            <span class="reinvent-pill-icon">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            Simple, transparent reporting.
+          </button>
+          <button class="reinvent-pill" type="button" data-desc="Personalized support and real-time updates, so you're never left wondering where things stand." data-glyph="💬">
+            <span class="reinvent-pill-icon">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            Exceptional client experience.
+          </button>
+        </div>
+        <p class="reinvent-mobile-desc" id="reinventMobileDesc">Consistently closing tasks accurately and on time, with QA rigor carried over from enterprise calibration work.</p>
+      </div>
+
       <a class="btn solid" href="#contact">Learn more&nbsp;→</a>
     </div>
     <div class="reinvent-media">
-      <div class="glyph">◔</div>
+      <div class="glyph" id="reinventMediaGlyph">◔</div>
     </div>
   </section>
 
@@ -1504,7 +1629,61 @@
       const wasOpen = btn.classList.contains('open');
       list.querySelectorAll('.reinvent-row').forEach(r=> r.classList.remove('open'));
       if(!wasOpen){ btn.classList.add('open'); }
+      swapReinventGlyph(btn.dataset.glyph);
     }
+
+    // Shared helper: fades the placeholder media glyph out, swaps the
+    // character, then fades it back in. Used by both the desktop
+    // accordion rows and the mobile pill carousel below, since they
+    // share the same .reinvent-media box.
+    function swapReinventGlyph(glyph){
+      const el = document.getElementById('reinventMediaGlyph');
+      if(!el || !glyph || el.textContent === glyph) return;
+      el.classList.add('fading');
+      setTimeout(()=>{
+        el.textContent = glyph;
+        el.classList.remove('fading');
+      }, 200);
+    }
+
+    // Mobile "Reinventing" pill carousel — tap a pill to swap the description below it.
+    // Scrolling is done manually on the pills container itself (not
+    // scrollIntoView), so only the row of cards slides — the page/viewport
+    // never moves. The description fades out, swaps text, then fades in
+    // instead of changing instantly, so it never overlaps the old text.
+    (function(){
+      const pills = document.querySelectorAll('.reinvent-pill');
+      const track = document.getElementById('reinventPills');
+      const desc = document.getElementById('reinventMobileDesc');
+      if(!pills.length || !desc || !track) return;
+
+      pills.forEach(pill=>{
+        pill.addEventListener('click', ()=>{
+          if(pill.classList.contains('active')) return;
+
+          pills.forEach(p=> p.classList.remove('active'));
+          pill.classList.add('active');
+
+          // Slide the pill row so the tapped card centers within it —
+          // scrollLeft math stays local to `track`, so nothing else scrolls.
+          const target = pill.offsetLeft - (track.clientWidth - pill.offsetWidth) / 2;
+          track.scrollTo({
+            left: Math.max(0, Math.min(target, track.scrollWidth - track.clientWidth)),
+            behavior: 'smooth'
+          });
+
+          // Fade-swap the description text
+          desc.classList.add('fading');
+          setTimeout(()=>{
+            desc.textContent = pill.dataset.desc;
+            desc.classList.remove('fading');
+          }, 180);
+
+          // Fade-swap the placeholder media to match this pill
+          swapReinventGlyph(pill.dataset.glyph);
+        });
+      });
+    })();
 
     // Journey: a lead dot travels along the current page's path (positioned
     // each frame via SVG getPointAtLength, not CSS offset-path — offset-path
