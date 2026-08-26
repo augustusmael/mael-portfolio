@@ -29,7 +29,7 @@
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
-  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400;}
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400; overflow-wrap:break-word; word-break:break-word;}
   a{text-decoration:none;color:inherit;}
   img{max-width:100%;display:block;}
   .wrap{max-width:1280px;margin:0 auto;padding:0 48px;}
@@ -42,9 +42,10 @@
     letter-spacing:.02em;
     padding:5px 32px;
     display:flex;
+    flex-wrap:wrap;
     align-items:center;
     justify-content:center;
-    gap:14px;
+    gap:6px 14px;
     text-align:center;
     background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
   }
@@ -586,7 +587,7 @@
     }
     .reinvent > *{ min-width:0; }
     .reinvent h2{
-      font-size:32px;
+      font-size:clamp(26px, 7vw, 34px);
       line-height:1.2;
       overflow-wrap:break-word;
     }
@@ -955,7 +956,7 @@
       padding:0;
       margin-bottom:26px;
       background:transparent;
-      font-size:34px;
+      font-size:clamp(26px, 7vw, 34px);
     }
     .testimonials-quotes{
       display:flex;
@@ -1009,13 +1010,42 @@
     .nav-links{display:none;}
     .desktop-only{display:none;}
     .hamburger{display:flex;}
-    .hero-top h1{font-size:44px;}
-    .great h2{font-size:32px;}
-    .statement h2{font-size:32px;}
-    /* testimonials h2 sizing now handled in the dedicated mobile block above */
-    .reviews h2{font-size:32px;}
-    .seat-text h2{font-size:34px;}
-    .footer-inner{grid-template-columns:1fr 1fr;}
+
+    /* Hero */
+    .hero-top{padding:40px 24px 0;}
+    .hero-top h1{font-size:clamp(32px, 9vw, 44px);}
+    .hero-top p{font-size:clamp(16px, 4.2vw, 19px);}
+
+    /* Logos strip */
+    .logos-strip{padding:48px 24px;}
+    .logos-strip h3{font-size:clamp(18px, 5vw, 22px);margin-bottom:32px;}
+    .logos-row{justify-content:center;gap:18px 28px;font-size:13px;}
+
+    /* Big red statement */
+    .statement{padding:48px 24px;}
+    .statement h2{font-size:clamp(24px, 7vw, 32px);line-height:1.35;}
+
+    /* "Great support" */
+    .great{padding:56px 24px 0;}
+    .great h2{font-size:clamp(24px, 7vw, 32px);margin-bottom:32px;}
+    .great-media .glyph{font-size:clamp(56px, 18vw, 90px);}
+
+    /* Reviews */
+    .reviews{padding:60px 0;}
+    .reviews h2{font-size:clamp(24px, 7vw, 32px);padding:0 24px;margin-bottom:36px;}
+    .review-carousel{padding:4px 24px;}
+
+    /* Tech-feature card */
+    .static-card{padding:28px 24px;}
+
+    /* Driver's seat */
+    .seat-text h2{font-size:clamp(26px, 7vw, 34px);}
+
+    /* Footer */
+    footer{padding:56px 24px 32px;}
+    .footer-inner{grid-template-columns:1fr 1fr;gap:28px 24px;}
+    .footer-cta{margin-top:40px;padding-top:28px;}
+    .footer-bottom{margin-top:28px;padding-top:18px;}
   }
 </style>
 </head>
