@@ -92,7 +92,19 @@
     border-bottom:2px solid var(--ink);
   }
   @media(max-width:900px){
-    nav{padding:10px 24px;}
+    .site-header{
+      position:-webkit-sticky;
+      position:sticky;
+      top:0;
+      z-index:1000;
+    }
+    .ribbon{position:relative;z-index:1001;}
+    nav{
+      padding:10px 24px;
+      position:relative;
+      z-index:1000;
+      background:var(--cream);
+    }
     .logo{font-size:24px;}
     .hamburger{width:32px;height:32px;gap:4px;}
     .hamburger span{width:20px;}
