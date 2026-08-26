@@ -16,6 +16,9 @@
     --blue:#AFC8DE;
     --line:#D8D3C4;
     --muted:#5B564C;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
@@ -34,9 +37,9 @@
   .ribbon{
     background:var(--red);
     color:#fff;
-    font-size:15px;
+    font-size:12px;
     letter-spacing:.02em;
-    padding:14px 32px;
+    padding:5px 32px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -48,13 +51,15 @@
   .ribbon .pill{
     background:var(--paper);
     color:var(--red-dark);
-    padding:9px 20px;
-    border-radius:999px;
+    padding:5px 16px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
     font-weight:600;
+    font-size:12px;
     white-space:nowrap;
-    transition:transform .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .ribbon .pill:hover{transform:translateY(-1px);}
+  .ribbon .pill:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
 
   .site-header{
     position:sticky;
@@ -71,7 +76,13 @@
     max-width:1280px;
     margin:0 auto;
     background:var(--cream);
-    box-shadow:0 2px 14px rgba(30,28,24,.07);
+    border-bottom:2px solid var(--ink);
+  }
+  @media(max-width:900px){
+    nav{padding:10px 24px;}
+    .logo{font-size:24px;}
+    .hamburger{width:32px;height:32px;gap:4px;}
+    .hamburger span{width:20px;}
   }
   .logo{
     font-family:'Fraunces',serif;
@@ -88,21 +99,147 @@
     font-weight:800;
     font-size:18px;
   }
-  .nav-links li{display:flex;align-items:center;gap:5px;cursor:default;color:var(--ink);}
-  .nav-links li svg{opacity:.55;width:13px;height:13px;}
+  .nav-links li{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    color:var(--ink);
+    padding:8px 0;
+  }
+  .nav-links li svg{opacity:.55;width:13px;height:13px;transition:transform .15s ease;}
+  .nav-links li.has-dropdown:hover svg,
+  .nav-links li.has-dropdown.open svg{transform:rotate(180deg);opacity:.9;}
+  .nav-links li.has-dropdown:hover,
+  .nav-links li.has-dropdown.open{color:var(--red);}
+
+  .nav-dropdown{
+    position:absolute;
+    top:calc(100% + 14px);
+    left:0;
+    background:var(--paper);
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-md);
+    min-width:220px;
+    padding:8px 24px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    z-index:1100;
+  }
+  .nav-links li.has-dropdown:hover .nav-dropdown,
+  .nav-links li.has-dropdown.open .nav-dropdown{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+  }
+  .nav-dropdown a{
+    display:block;
+    padding:16px 0;
+    font-size:17px;
+    font-weight:600;
+    color:var(--ink);
+    border-top:1px solid var(--line);
+    white-space:nowrap;
+  }
+  .nav-dropdown a:first-child{border-top:none;}
+  .nav-dropdown a:hover{color:var(--red);}
   .track-btn{
     background:var(--red);
     color:#fff;
     padding:17px 26px;
-    border-radius:999px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
     font-weight:700;
     font-size:16px;
     display:flex;
     align-items:center;
     gap:10px;
-    transition:background .15s ease, transform .15s ease;
+    transition:background .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .track-btn:hover{background:var(--red-dark);transform:translateY(-1px);}
+  .track-btn:hover{background:var(--red-dark);transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+
+  /* Hamburger menu (mobile only) */
+  .hamburger{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:5px;
+    width:44px;
+    height:44px;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    flex-shrink:0;
+  }
+  .hamburger span{
+    display:block;
+    width:26px;
+    height:2px;
+    background:var(--ink);
+    border-radius:2px;
+    transition:transform .25s ease, opacity .2s ease;
+  }
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  .mobile-menu{
+    max-height:0;
+    overflow:hidden;
+    background:var(--cream);
+    border-top:0px solid var(--line);
+    transition:max-height .35s ease, border-top-width .35s ease;
+  }
+  .mobile-menu.open{max-height:500px;}
+  .mobile-menu-inner{padding:2px 24px 12px;}
+  .mobile-menu-item{}
+  .mobile-menu-toggle{
+    all:unset;
+    box-sizing:border-box;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:6px 0;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .mobile-menu-toggle svg{
+    width:10px;height:10px;
+    opacity:.55;
+    flex-shrink:0;
+    transition:transform .2s ease;
+  }
+  .mobile-menu-item.open .mobile-menu-toggle svg{transform:rotate(180deg);opacity:.9;}
+  .mobile-menu-item.open .mobile-menu-toggle{color:var(--red);}
+  .mobile-submenu{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+  }
+  .mobile-menu-item.open .mobile-submenu{max-height:120px;}
+  .mobile-submenu a{
+    display:block;
+    padding:5px 0 5px 14px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .mobile-submenu a:hover{color:var(--red);}
+  .mobile-menu .track-btn{
+    justify-content:center;
+    margin-top:8px;
+    padding:9px 22px;
+    font-size:13px;
+    width:100%;
+  }
 
   .btn{
     display:inline-flex;
@@ -113,11 +250,12 @@
     font-weight:700;
     font-size:17px;
     padding:20px 32px;
-    border-radius:999px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
     margin-top:32px;
-    transition:transform .15s ease, background .15s ease;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
   }
-  .btn:hover{transform:translateY(-2px);}
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-sm);}
   .btn.solid{background:var(--red);color:#fff;}
   .btn.solid:hover{background:var(--red-dark);}
 
@@ -191,9 +329,10 @@
      echoing the reference site's plain-photo-plus-line composition. */
   .jcard{
     position:absolute;
-    border-radius:26px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
     overflow:visible;
-    box-shadow:0 22px 48px rgba(30,28,24,.14);
+    box-shadow:var(--shadow-md);
     z-index:1;
   }
   .jcard.size-a{ height:clamp(84px, 28cqh, 130px); aspect-ratio:4/3; }
@@ -202,7 +341,7 @@
 
   .jcard-surface{
     width:100%; height:100%;
-    border-radius:26px;
+    border-radius:calc(var(--radius) - 1px);
     overflow:hidden;
     position:relative;
     display:flex; align-items:center; justify-content:center;
@@ -214,13 +353,14 @@
   .jcard.size-c .glyph{ font-size:clamp(30px, 13cqh, 54px); }
   .jcard-caption{
     position:absolute; left:16px; bottom:16px; right:16px;
-    background:rgba(251,249,243,.94);
+    background:var(--paper);
     color:var(--ink);
     font-weight:700; font-size:14px;
     line-height:1.25;
     padding:9px 14px;
-    border-radius:14px;
-    box-shadow:0 8px 18px rgba(30,28,24,.1);
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
   }
   .jcard.end .jcard-caption{ background:var(--red); color:#fff; }
   .jcard.end .glyph{ color:#fff; opacity:.35; }
@@ -229,8 +369,9 @@
     width:32px; height:32px;
     left:20px; bottom:-14px;
     background:var(--red);
-    border-radius:9px;
-    box-shadow:0 10px 20px rgba(226,78,50,.35);
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
   }
 
   @media(max-width:700px){
@@ -242,9 +383,13 @@
   @media(max-width:600px){
     .ribbon{
       flex-direction:column;
-      padding:14px 24px;
-      gap:8px;
-      font-size:13px;
+      padding:7px 24px;
+      gap:4px;
+      font-size:10px;
+    }
+    .ribbon .pill{
+      padding:3px 12px;
+      font-size:10px;
     }
   }
 
@@ -277,7 +422,7 @@
   .statement{
     background:var(--red);
     color:#fff;
-    padding:130px 48px;
+    padding:70px 48px;
     text-align:center;
   }
   .statement h2{
@@ -328,7 +473,8 @@
   }
   .great-media{
     background:#141210;
-    border-radius:24px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
     aspect-ratio:1180/620;
     width:65%;
     margin:0 auto;
@@ -376,7 +522,7 @@
     flex-shrink:0;
   }
   .reinvent-marker{
-    width:26px;height:26px;border-radius:50%;
+    width:26px;height:26px;border-radius:var(--radius);
     border:2px solid var(--red);
     flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
@@ -410,17 +556,20 @@
   }
   .reinvent-row.open .reinvent-copy-wrap > p{ margin-top:10px; }
   .reinvent-media{
-    border-radius:28px;
+    border-radius:var(--radius);
     overflow:hidden;
     aspect-ratio:1000/920;
     background:var(--paper);
-    border:1px solid var(--line);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
     display:flex;align-items:center;justify-content:center;
   }
   .reinvent-media .glyph{font-size:130px;opacity:.15;}
 
   @media(max-width:900px){
     .reinvent{grid-template-columns:1fr;gap:40px;}
+    .great{padding-left:24px;padding-right:24px;}
+    .great-media{width:100%;}
   }
 
   /* Testimonials — centered heading, rows with orange left border, centered content */
@@ -432,8 +581,15 @@
   .testimonials h2{
     font-size:64px;
     font-weight:400;
-    margin-bottom:70px;
+    margin-bottom:0;
+    position:sticky;
+    top:110px;
+    z-index:2;
+    background:var(--blue);
+    padding:24px 0 46px;
   }
+  .testimonials-quotes{ position:relative; z-index:1; }
+  .testimonials-dots{ display:none; }
   .quote-block{
     padding:44px 0;
     border-top:1px solid rgba(30,28,24,.18);
@@ -496,9 +652,10 @@
   }
   .review-card{
     background:var(--paper);
-    border-radius:20px;
+    border-radius:var(--radius);
     padding:32px;
-    border:1px solid var(--line);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
     flex:0 0 calc((100% - 48px)/3);
     min-width:0;
   }
@@ -506,7 +663,7 @@
     display:flex;align-items:center;gap:14px;margin-bottom:18px;
   }
   .avatar{
-    width:44px;height:44px;border-radius:50%;
+    width:44px;height:44px;border-radius:var(--radius);
     background:var(--red);color:#fff;
     display:flex;align-items:center;justify-content:center;
     font-weight:700;font-size:16px;
@@ -520,7 +677,7 @@
     display:flex;justify-content:center;gap:8px;margin-top:40px;
   }
   .review-dots span{
-    width:8px;height:8px;border-radius:50%;background:var(--line);
+    width:8px;height:8px;border-radius:1px;background:var(--line);
     transition:background .3s ease, transform .3s ease;
   }
   .review-dots span.active{background:var(--red);transform:scale(1.2);}
@@ -536,11 +693,14 @@
     margin:0 auto;
     position:relative;
   }
+  @media(max-width:900px){
+    .tech-feature{ padding:40px 24px 20px; }
+  }
   .static-line-wrap{
     position:relative;
-    min-height:420px;
-    display:flex;
-    align-items:flex-start;
+    max-width:1180px;
+    height:360px;
+    margin:0 auto;
   }
   .static-line{
     position:absolute;
@@ -550,35 +710,44 @@
     z-index:0;
   }
   .static-card{
-    position:relative;
+    position:absolute;
+    top:40px;
+    left:210px;
+    width:760px;
+    height:260px;
     z-index:1;
     background:var(--paper);
-    border-radius:28px;
-    padding:56px 64px;
-    max-width:760px;
-    margin-left:130px;
-    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:36px 56px;
+    box-sizing:border-box;
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
     transform:scale(1);
     transition:transform .6s cubic-bezier(.22,1,.36,1);
+    display:flex;
+    align-items:center;
+    gap:28px;
   }
-  .static-card.in-view{ transform:scale(1.045); }
+  .static-card.in-view{ transform:scale(1.03); }
+  .static-card > div{ flex-shrink:0; }
   .static-card h3{
-    font-size:38px;
+    font-size:24px;
     font-weight:400;
     line-height:1.2;
-    margin:24px 0 18px;
+    margin:0 0 8px;
     letter-spacing:-.015em;
   }
   .static-card p{
     color:var(--muted);
-    font-size:18px;
-    line-height:1.65;
-    max-width:560px;
+    font-size:13px;
+    line-height:1.5;
+    max-width:520px;
   }
-  .static-card .btn{ margin-top:28px; }
+  .static-card .btn{ margin-top:12px; }
 
   @media(max-width:900px){
-    .static-card{ margin-left:0; max-width:100%; padding:40px 32px; }
+    .static-line-wrap{ height:auto; padding:24px 0; }
+    .static-card{ position:static; margin:0 auto; width:100%; max-width:600px; height:auto; padding:32px; flex-direction:column; text-align:left; }
     .static-line{ display:none; }
   }
 
@@ -619,19 +788,19 @@
   }
   .seat-icon{
     width:58px;height:58px;
-    border-radius:50%;
+    border-radius:var(--radius);
     background:var(--paper);
-    border:1px solid var(--line);
+    border:1px solid var(--ink);
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
   }
   .seat-item span{font-weight:700;font-size:19px;}
   .seat-media{
-    border-radius:24px;
+    border-radius:var(--radius);
     overflow:hidden;
     aspect-ratio:900/700;
     background:var(--paper);
-    border:1px solid var(--line);
+    border:1px solid var(--ink);
     display:flex;align-items:center;justify-content:center;
   }
   .seat-media img{width:100%;height:100%;object-fit:cover;}
@@ -657,7 +826,7 @@
   .footer-brand p{color:var(--muted);font-size:16px;margin-bottom:24px;}
   .socials{display:flex;gap:14px;}
   .socials a{
-    width:38px;height:38px;border-radius:50%;
+    width:38px;height:38px;border-radius:var(--radius);
     background:var(--ink);color:#fff;
     display:flex;align-items:center;justify-content:center;
     font-size:15px;
@@ -686,7 +855,60 @@
   .footer-bottom a:hover{color:var(--ink);}
 
   @media(max-width:900px){
+    /* Testimonials: disable the sticky-lock effect and turn the quotes
+       into a horizontally swipeable carousel instead */
+    .testimonials h2{
+      position:static;
+      padding:0;
+      margin-bottom:32px;
+      background:transparent;
+    }
+    .testimonials-quotes{
+      display:flex;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      gap:18px;
+      margin:0 -24px;
+      padding:4px 24px 4px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .testimonials-quotes::-webkit-scrollbar{ display:none; }
+    .testimonials .quote-block{
+      flex:0 0 86%;
+      scroll-snap-align:center;
+      border:none;
+      background:transparent;
+      box-shadow:none;
+      padding:6px 0;
+    }
+    .testimonials .quote-block:last-child{ border:none; }
+    .testimonials .quote-block-inner{
+      border-left:3px solid var(--red);
+      padding-left:18px;
+      max-width:none;
+    }
+    .testimonials blockquote{ font-size:20px; }
+
+    .testimonials-dots{
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      margin-top:26px;
+    }
+    .testimonials-dots span{
+      width:8px;height:8px;border-radius:1px;
+      background:rgba(30,28,24,.28);
+      transition:background .3s ease, transform .3s ease;
+    }
+    .testimonials-dots span.active{
+      background:var(--ink);
+      transform:scale(1.2);
+    }
+
     .nav-links{display:none;}
+    .desktop-only{display:none;}
+    .hamburger{display:flex;}
     .hero-top h1{font-size:44px;}
     .great h2{font-size:32px;}
     .statement h2{font-size:32px;}
@@ -706,19 +928,100 @@
   </div>
 
   <nav>
-    <div class="logo">mael<span>.</span></div>
+    <div class="logo">askmael<span>.</span></div>
     <ul class="nav-links">
-      <li>Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
-      <li>Experience <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
-      <li>Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
-      <li>About <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
-      <li>Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></li>
+      <li class="has-dropdown">Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Experience <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">About <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </li>
     </ul>
-    <a class="track-btn" href="#contact">
+    <a class="track-btn desktop-only" href="#contact">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
       View Résumé
     </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Services
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Experience
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Projects
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">About
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Resources
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#">Placeholder item 1</a>
+          <a href="#">Placeholder item 2</a>
+        </div>
+      </div>
+      <a class="track-btn" href="#contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        View Résumé
+      </a>
+    </div>
+  </div>
   </div>
 
   <section class="hero-top">
@@ -911,20 +1214,23 @@
   <section class="testimonials">
     <div class="testimonials-inner">
       <h2>Trusted by the teams I've supported</h2>
-      <div class="quote-block">
-        <div class="quote-block-inner">
-          <div class="who">Operations Manager</div>
-          <blockquote>"Mael brought structure to a process that had none. Turnaround times dropped and reporting finally made sense."</blockquote>
-          <div class="attribution">Team Lead<span>Client feedback</span></div>
+      <div class="testimonials-quotes" id="testimonialsQuotes">
+        <div class="quote-block">
+          <div class="quote-block-inner">
+            <div class="who">Operations Manager</div>
+            <blockquote>"Mael brought structure to a process that had none. Turnaround times dropped and reporting finally made sense."</blockquote>
+            <div class="attribution">Team Lead<span>Client feedback</span></div>
+          </div>
+        </div>
+        <div class="quote-block">
+          <div class="quote-block-inner">
+            <div class="who">Team Supervisor</div>
+            <blockquote>"Calibration sessions became genuinely useful once Mael took them over — clear criteria, consistent scoring."</blockquote>
+            <div class="attribution">QA Partner<span>Client feedback</span></div>
+          </div>
         </div>
       </div>
-      <div class="quote-block">
-        <div class="quote-block-inner">
-          <div class="who">Team Supervisor</div>
-          <blockquote>"Calibration sessions became genuinely useful once Mael took them over — clear criteria, consistent scoring."</blockquote>
-          <div class="attribution">QA Partner<span>Client feedback</span></div>
-        </div>
-      </div>
+      <div class="testimonials-dots" id="testimonialsDots"></div>
     </div>
   </section>
 
@@ -979,32 +1285,44 @@
 
   <section class="tech-feature" aria-label="What working together looks like">
     <div class="static-line-wrap">
-      <svg class="static-line" viewBox="0 0 1180 620" preserveAspectRatio="none" fill="none">
-        <path d="M -20 30
-                 L 60 30
-                 C 100 30 100 90 100 130
-                 L 100 470
-                 C 100 540 100 590 160 590
-                 L 300 590"
+      <svg class="static-line" viewBox="0 0 1180 360" fill="none">
+        <!-- decorative top road, floats above the card -->
+        <path d="M 440 20 L 970 20" stroke="#C7C0AC" stroke-width="2" fill="none"/>
+
+        <!-- left entry line: off-canvas → curves up into the card's top-left corner (top:40, left:210) -->
+        <path d="M -20 170 L 90 170 C 130 170 130 100 170 100 L 210 100"
           stroke="#C7C0AC" stroke-width="2" fill="none"/>
-        <circle cx="100" cy="130" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
-        <circle cx="100" cy="240" r="7" fill="#E24E32"/>
-        <path d="M 1000 590 L 1200 590 C 1240 590 1240 470 1240 430 L 1240 90"
+        <circle cx="90" cy="170" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+        <circle cx="150" cy="135" r="7" fill="#E24E32"/>
+
+        <!-- exit line from bottom-left of the card (top+height = 300), then splits into two branches -->
+        <path d="M 210 300 C 170 300 170 330 130 330 L -20 330"
           stroke="#C7C0AC" stroke-width="2" fill="none"/>
-        <circle cx="1000" cy="590" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+        <path d="M 210 300 C 250 300 250 345 300 345 L 1200 345"
+          stroke="#C7C0AC" stroke-width="2" fill="none"/>
+        <circle cx="210" cy="300" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+        <circle cx="130" cy="330" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
+
+        <!-- right floating line, beside the card's right edge (left+width = 970) -->
+        <path d="M 970 100 L 1200 100" stroke="#C7C0AC" stroke-width="2" fill="none"/>
+        <circle cx="1030" cy="100" r="6" fill="none" stroke="#C7C0AC" stroke-width="2"/>
       </svg>
 
       <div class="static-card">
-        <svg width="90" height="58" viewBox="0 0 200 130" fill="none">
-          <rect x="20" y="55" width="140" height="45" rx="14" fill="#EFF3F7" stroke="#1E1C18" stroke-width="2.5"/>
-          <path d="M35 55 L55 25 H135 L155 55" stroke="#1E1C18" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
-          <circle cx="55" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
-          <circle cx="130" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
-          <path d="M165 30 L170 20 M175 35 L182 28" stroke="#E24E32" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        <h3>Systems-first support for growing teams</h3>
-        <p>With process and follow-through at the forefront, I handle QA, reporting, and day-to-day operations so your team can move faster with less overhead.</p>
-        <a class="btn" href="#contact">Learn More&nbsp;→</a>
+        <div>
+          <svg width="70" height="45" viewBox="0 0 200 130" fill="none">
+            <rect x="20" y="55" width="140" height="45" rx="14" fill="#EFF3F7" stroke="#1E1C18" stroke-width="2.5"/>
+            <path d="M35 55 L55 25 H135 L155 55" stroke="#1E1C18" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+            <circle cx="55" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
+            <circle cx="130" cy="100" r="12" fill="#F2EFE6" stroke="#1E1C18" stroke-width="2.5"/>
+            <path d="M165 30 L170 20 M175 35 L182 28" stroke="#E24E32" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Systems-first support for growing teams</h3>
+          <p>With process and follow-through at the forefront, I handle QA, reporting, and day-to-day operations so your team can move faster with less overhead.</p>
+          <a class="btn" href="#contact">Learn More&nbsp;→</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1045,7 +1363,7 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="logo">mael<span>.</span></div>
+        <div class="logo">askmael<span>.</span></div>
         <p>Operations, quality, and automation — delivered with care.</p>
         <div class="socials">
           <a href="#">in</a>
@@ -1090,6 +1408,59 @@
   </footer>
 
   <script>
+    // Nav dropdowns — hover handles desktop (CSS); this adds tap-to-toggle for touch devices
+    (function(){
+      const items = document.querySelectorAll('.nav-links li.has-dropdown');
+      items.forEach(item=>{
+        item.addEventListener('click', (e)=>{
+          if(window.matchMedia('(hover: hover)').matches) return;
+          e.stopPropagation();
+          const wasOpen = item.classList.contains('open');
+          items.forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      document.addEventListener('click', ()=>{
+        items.forEach(i=> i.classList.remove('open'));
+      });
+    })();
+
+// Mobile hamburger menu toggle
+    (function(){
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+      btn.addEventListener('click', ()=>{
+        const isOpen = menu.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      // Sub-menu accordions (Services, Experience, Projects, About, Resources)
+      menu.querySelectorAll('.mobile-menu-item').forEach(item=>{
+        const toggle = item.querySelector('.mobile-menu-toggle');
+        toggle.addEventListener('click', ()=>{
+          const wasOpen = item.classList.contains('open');
+          menu.querySelectorAll('.mobile-menu-item').forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      // Only real leaf links (submenu items + résumé CTA) close the whole menu
+      menu.querySelectorAll('.mobile-submenu a, .mobile-menu-inner > .track-btn').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', ()=>{
+        if(window.innerWidth > 900){
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
     const revealHeading = document.getElementById('revealHeading');
     if(revealHeading){
       const io = new IntersectionObserver((entries)=>{
@@ -1234,6 +1605,48 @@
 
       resetDot(current);
       animateDot(current, ()=> advance(current));
+    })();
+
+    // Testimonials mobile carousel — dots reflect swipe position, tapping a dot scrolls to that card
+    (function(){
+      const wrap = document.getElementById('testimonialsQuotes');
+      const dotsWrap = document.getElementById('testimonialsDots');
+      if(!wrap || !dotsWrap) return;
+      const cards = Array.from(wrap.children);
+
+      function buildDots(){
+        dotsWrap.innerHTML = '';
+        cards.forEach((_, i)=>{
+          const d = document.createElement('span');
+          if(i === 0) d.classList.add('active');
+          d.addEventListener('click', ()=>{
+            const card = cards[i];
+            wrap.scrollTo({ left: card.offsetLeft - wrap.offsetLeft, behavior:'smooth' });
+          });
+          dotsWrap.appendChild(d);
+        });
+      }
+
+      function updateActive(){
+        const center = wrap.scrollLeft + wrap.clientWidth / 2;
+        let closest = 0, closestDist = Infinity;
+        cards.forEach((card, i)=>{
+          const cardCenter = card.offsetLeft - wrap.offsetLeft + card.clientWidth / 2;
+          const dist = Math.abs(cardCenter - center);
+          if(dist < closestDist){ closestDist = dist; closest = i; }
+        });
+        Array.from(dotsWrap.children).forEach((d, i)=> d.classList.toggle('active', i === closest));
+      }
+
+      buildDots();
+      let ticking = false;
+      wrap.addEventListener('scroll', ()=>{
+        if(!ticking){
+          requestAnimationFrame(()=>{ updateActive(); ticking = false; });
+          ticking = true;
+        }
+      });
+      window.addEventListener('resize', buildDots);
     })();
 
     // Auto-sliding review carousel — advances every 3 seconds
