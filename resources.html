@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resources — Mael, Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6;
+    --paper:#FBF9F3;
+    --ink:#1E1C18;
+    --red:#E24E32;
+    --red-dark:#C93F26;
+    --blue:#AFC8DE;
+    --line:#D8D3C4;
+    --muted:#5B564C;
+    --green:#2F6B3A;
+    --green-tint:#E4EEE4;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;overflow-x:clip;width:100%;max-width:100vw;overscroll-behavior-x:none;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:clip;width:100%;max-width:100vw;position:relative;
+    overscroll-behavior-x:none;touch-action:pan-y;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400; overflow-wrap:break-word; word-break:break-word;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;}
+
+  /* ===== Header (shared with index.html / services.html / experience.html / about.html) ===== */
+  .ribbon{
+    background:var(--red);color:#fff;font-size:12px;letter-spacing:.02em;
+    padding:5px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:6px 14px;text-align:center;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+  }
+  .ribbon b{font-weight:700;}
+  .ribbon .pill{
+    background:var(--paper);color:var(--red-dark);padding:5px 16px;border-radius:var(--radius);
+    border:1px solid var(--ink);font-weight:600;font-size:12px;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .ribbon .pill:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .site-header{position:sticky;top:0;z-index:1000;}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;padding:22px 48px;
+    max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);
+  }
+  .logo{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--red);letter-spacing:-.01em;}
+  .logo span{color:var(--ink);}
+  .nav-links{display:flex;gap:20px;list-style:none;font-weight:800;font-size:18px;}
+  .nav-links li{position:relative;display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--ink);padding:8px 0;}
+  .nav-links li svg{opacity:.55;width:13px;height:13px;transition:transform .15s ease;}
+  .nav-links li.has-dropdown:hover svg,.nav-links li.has-dropdown.open svg{transform:rotate(180deg);opacity:.9;}
+  .nav-links li.has-dropdown:hover,.nav-links li.has-dropdown.open{color:var(--red);}
+  .nav-links li.current{color:var(--red);}
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 14px);left:0;background:var(--paper);border-radius:var(--radius);
+    border:1px solid var(--ink);box-shadow:var(--shadow-md);min-width:240px;padding:8px 24px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;z-index:1100;
+  }
+  .nav-links li.has-dropdown:hover .nav-dropdown,.nav-links li.has-dropdown.open .nav-dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);
+  }
+  .nav-dropdown a{display:block;padding:16px 0;font-size:17px;font-weight:600;color:var(--ink);border-top:1px solid var(--line);white-space:nowrap;}
+  .nav-dropdown a:first-child{border-top:none;}
+  .nav-dropdown a:hover{color:var(--red);}
+  .track-btn{
+    background:var(--red);color:#fff;padding:17px 26px;border-radius:var(--radius);border:1px solid var(--ink);
+    font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;
+    transition:background .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .track-btn:hover{background:var(--red-dark);transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;background:transparent;border:none;cursor:pointer;padding:0;flex-shrink:0;}
+  .hamburger span{display:block;width:26px;height:2px;background:var(--ink);border-radius:2px;transition:transform .25s ease, opacity .2s ease;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-menu{max-height:0;overflow:hidden;background:var(--cream);border-top:0px solid var(--line);transition:max-height .35s ease, border-top-width .35s ease;}
+  .mobile-menu.open{max-height:640px;}
+  .mobile-menu-inner{padding:2px 24px 12px;}
+  .mobile-menu-toggle{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;}
+  .mobile-menu-toggle svg{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .2s ease;}
+  .mobile-menu-item.open .mobile-menu-toggle svg{transform:rotate(180deg);opacity:.9;}
+  .mobile-menu-item.open .mobile-menu-toggle{color:var(--red);}
+  .mobile-submenu{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .mobile-menu-item.open .mobile-submenu{max-height:260px;}
+  .mobile-submenu a{display:block;padding:5px 0 5px 14px;font-size:12px;font-weight:600;color:var(--muted);}
+  .mobile-submenu a:hover{color:var(--red);}
+  .mobile-menu .track-btn{justify-content:center;margin-top:8px;padding:9px 22px;font-size:13px;width:100%;}
+  @media(max-width:900px){
+    nav{padding:10px 24px;position:relative;z-index:1000;background:var(--cream);}
+    .logo{font-size:24px;}
+    .hamburger{display:flex;width:32px;height:32px;gap:4px;}
+    .hamburger span{width:20px;}
+    .nav-links{display:none;}
+    .desktop-only{display:none;}
+    .ribbon{flex-direction:column;padding:7px 24px;gap:4px;font-size:10px;}
+    .ribbon .pill{padding:3px 12px;font-size:10px;}
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:var(--ink);font-weight:700;
+    font-size:17px;padding:20px 32px;border-radius:var(--radius);border:1px solid var(--ink);
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-sm);}
+  .btn.solid{background:var(--red);color:#fff;}
+  .btn.solid:hover{background:var(--red-dark);}
+  .btn.dark{background:var(--ink);color:#fff;}
+  .btn.dark:hover{background:#000;}
+  .btn.small{padding:10px 18px;font-size:13px;margin-top:0;}
+
+  /* ===== Hero ===== */
+  .res-hero{max-width:900px;margin:0 auto;padding:64px 32px 40px;text-align:center;}
+  .res-hero .pill-label{
+    display:inline-block;background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);
+  }
+  .res-hero h1{font-size:64px;line-height:1.08;font-weight:400;letter-spacing:-.02em;margin-top:22px;}
+  .res-hero h1 .accent{color:var(--red);font-weight:600;}
+  .res-hero p{margin:26px auto 0;font-size:20px;line-height:1.55;color:var(--muted);max-width:620px;}
+  @media(max-width:700px){
+    .res-hero{padding:36px 24px 28px;}
+    .res-hero h1{font-size:clamp(30px,9vw,40px);}
+    .res-hero p{font-size:16px;}
+  }
+
+  /* ===== Templates grid ===== */
+  .res-templates{max-width:1280px;margin:0 auto;padding:20px 48px 90px;scroll-margin-top:150px;}
+  .res-section-head{margin-bottom:36px;}
+  .res-section-head .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);}
+  .res-section-head h2{font-size:34px;font-weight:400;margin-top:10px;}
+  .res-section-head p{color:var(--muted);font-size:15.5px;margin-top:10px;max-width:600px;}
+
+  .template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .template-card{
+    background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:26px;display:flex;flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .template-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .template-glyph{
+    width:52px;height:52px;border-radius:var(--radius);background:var(--red);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px;
+    border:1px solid var(--ink);
+  }
+  .template-tag{
+    display:inline-block;background:var(--cream);border:1px solid var(--ink);border-radius:var(--radius);
+    font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:4px 10px;
+    margin-bottom:12px;align-self:flex-start;
+  }
+  .template-card h3{font-size:19px;line-height:1.28;margin-bottom:10px;}
+  .template-card p{color:var(--muted);font-size:14px;line-height:1.55;flex:1;margin-bottom:18px;}
+  .template-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .template-open{
+    background:var(--ink);color:#fff;font-weight:700;font-size:12.5px;padding:10px 16px;border-radius:var(--radius);
+    border:1px solid var(--ink);cursor:pointer;text-transform:uppercase;letter-spacing:.02em;
+    display:inline-flex;align-items:center;gap:6px;transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .template-open:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  @media(max-width:900px){
+    .res-templates{padding:16px 24px 60px;}
+    .template-grid{grid-template-columns:1fr;}
+  }
+
+  /* ===== FAQ ===== */
+  .res-faq{max-width:900px;margin:0 auto;padding:20px 48px 100px;scroll-margin-top:150px;}
+  .faq-item{border-top:1px solid var(--line);}
+  .faq-item:last-child{border-bottom:1px solid var(--line);}
+  .faq-q{
+    all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding:22px 0;cursor:pointer;font-size:17px;font-weight:700;
+  }
+  .faq-q svg{flex-shrink:0;width:14px;height:14px;opacity:.6;transition:transform .2s ease;}
+  .faq-item.open .faq-q svg{transform:rotate(180deg);}
+  .faq-item.open .faq-q{color:var(--red-dark);}
+  .faq-a-wrap{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .3s ease;}
+  .faq-item.open .faq-a-wrap{grid-template-rows:1fr;}
+  .faq-a-wrap > div{overflow:hidden;}
+  .faq-a{color:var(--muted);font-size:15.5px;line-height:1.65;padding-bottom:22px;max-width:640px;}
+  @media(max-width:700px){
+    .res-faq{padding:16px 24px 64px;}
+    .faq-q{font-size:15.5px;}
+  }
+
+  /* ===== CTA banner (shared pattern) ===== */
+  .res-cta{background:var(--red);color:#fff;padding:80px 48px;text-align:center;position:relative;overflow:hidden;}
+  .res-cta::before{
+    content:'';position:absolute;inset:0;opacity:.15;pointer-events:none;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.5) 0 1px, transparent 1px 34px);
+  }
+  .res-cta-inner{position:relative;max-width:720px;margin:0 auto;}
+  .res-cta h2{font-size:38px;font-weight:400;line-height:1.3;}
+  .res-cta p{margin-top:16px;font-size:17px;color:rgba(255,255,255,.9);}
+  .res-cta .btn{background:var(--ink);color:#fff;margin-top:28px;}
+  @media(max-width:700px){
+    .res-cta{padding:52px 24px;}
+    .res-cta h2{font-size:clamp(24px,7vw,30px);}
+  }
+
+  /* ===== Modal ===== */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(30,28,24,.6);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--cream);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;max-width:820px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
+  .modal-header{padding:20px 26px;border-bottom:2px solid var(--red);background:var(--paper);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+  .modal-header h2{font-size:22px;line-height:1.25;}
+  .modal-header .sub{font-size:12.5px;color:var(--muted);margin-top:6px;}
+  .modal-close{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);width:34px;height:34px;font-weight:700;cursor:pointer;flex-shrink:0;font-size:16px;}
+  .modal-toolbar{padding:14px 26px;border-bottom:1px solid var(--line);background:var(--cream);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .modal-toolbar .copy-status{font-size:12px;font-weight:700;color:var(--green);}
+  .modal-body{flex:1;overflow-y:auto;padding:22px 26px 30px;}
+  .tpl-section{margin-bottom:22px;}
+  .tpl-section:last-child{margin-bottom:0;}
+  .tpl-section h4{
+    font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red-dark);
+    margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line);
+  }
+  .tpl-section .body-text{font-size:14.5px;line-height:1.6;color:var(--ink);}
+  .tpl-section ol,.tpl-section ul{padding-left:20px;margin-top:4px;}
+  .tpl-section li{font-size:14.5px;line-height:1.65;margin-bottom:6px;color:var(--ink);}
+  .tpl-table{width:100%;border-collapse:collapse;margin-top:4px;font-size:13.5px;}
+  .tpl-table th{background:var(--paper);border:1px solid var(--line);padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);}
+  .tpl-table td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;}
+</style>
+</head>
+<body>
+
+  <div class="site-header">
+  <div class="ribbon">
+    <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
+    <a class="pill" href="index.html#contact">Get In Touch</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="services.html#automation">Workflow Automation</a>
+          <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+          <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+          <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+          <a href="services.html#client-communication">Client Communication</a>
+        </div>
+      </li>
+      <li class="has-dropdown"><a href="experience.html">Experience</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="experience.html#taskus-sme">SME · TaskUs</a>
+          <a href="experience.html#taskus-csr">CSR · TaskUs</a>
+          <a href="experience.html#alorica-csr">CSR · Alorica</a>
+          <a href="experience.html#foundation">Education &amp; Technical Background</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="project.html">All Projects</a>
+          <a href="project.html#ticketing">Campaign Portal Ticketing System</a>
+          <a href="project.html#library">Ticket Library</a>
+          <a href="project.html#knowledge-base">Knowledge Base Sample</a>
+        </div>
+      </li>
+      <li class="has-dropdown"><a href="about.html">About</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="about.html#mission">My Philosophy</a>
+          <a href="about.html#story">My Story</a>
+          <a href="about.html#glance">At a Glance</a>
+        </div>
+      </li>
+      <li class="has-dropdown current"><a href="resources.html">Resources</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#templates">Templates</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </li>
+    </ul>
+    <a class="track-btn desktop-only" href="index.html#contact">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      View Résumé
+    </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Services
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="services.html#automation">Workflow Automation</a>
+          <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+          <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+          <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+          <a href="services.html#client-communication">Client Communication</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Experience
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="experience.html">View Full Experience</a>
+          <a href="experience.html#taskus-sme">SME · TaskUs</a>
+          <a href="experience.html#taskus-csr">CSR · TaskUs</a>
+          <a href="experience.html#alorica-csr">CSR · Alorica</a>
+          <a href="experience.html#foundation">Education &amp; Technical Background</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Projects
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="project.html">All Projects</a>
+          <a href="project.html#ticketing">Campaign Portal Ticketing System</a>
+          <a href="project.html#library">Ticket Library</a>
+          <a href="project.html#knowledge-base">Knowledge Base Sample</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">About
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="about.html">View About Page</a>
+          <a href="about.html#mission">My Philosophy</a>
+          <a href="about.html#story">My Story</a>
+          <a href="about.html#glance">At a Glance</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item open">
+        <button class="mobile-menu-toggle" type="button">Resources
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#templates">Templates</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+      <a class="track-btn" href="index.html#contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        View Résumé
+      </a>
+    </div>
+  </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="res-hero">
+    <span class="pill-label">Resources</span>
+    <h1>Templates I actually <span class="accent">use</span></h1>
+    <p>Not filler content — the same SOP structure, scorecard, and onboarding checklist referenced on the Services and Experience pages. Preview any of them, copy the text, or download a plain-text version.</p>
+  </section>
+
+  <!-- ================= TEMPLATES ================= -->
+  <section class="res-templates" id="templates">
+    <div class="res-section-head">
+      <span class="eyebrow">Downloadable</span>
+      <h2>Three templates, ready to adapt</h2>
+      <p>Each one is the actual skeleton I start from — swap in your process, your criteria, your cadence.</p>
+    </div>
+    <div class="template-grid" id="templateGrid"></div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="res-faq" id="faq">
+    <div class="res-section-head">
+      <span class="eyebrow">Before You Reach Out</span>
+      <h2>A few things people usually ask</h2>
+    </div>
+    <div id="faqList"></div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="res-cta">
+    <div class="res-cta-inner">
+      <h2>Want these built around your actual workflow?</h2>
+      <p>Templates are a starting point. The real value is having someone map your process, fill these in with your details, and keep them current.</p>
+      <a class="btn" href="index.html#contact">Get In Touch&nbsp;→</a>
+    </div>
+  </section>
+
+  <footer style="background:var(--cream);padding:70px 48px 44px;border-top:1px solid var(--line);">
+    <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.3fr repeat(5,1fr);gap:32px;" class="footer-inner">
+      <div class="footer-brand">
+        <a class="logo" href="index.html" style="margin-bottom:18px;display:block;">MAELSTRO<span>.</span></a>
+        <p style="color:var(--muted);font-size:16px;margin-bottom:24px;">Operations, quality, and automation — delivered with care.</p>
+        <div class="socials" style="display:flex;gap:14px;">
+          <a href="#" style="width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;">in</a>
+          <a href="#" style="width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;">✉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:22px;">Services</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="services.html#process-mapping" style="color:var(--ink);font-size:15px;">Process Mapping</a></li>
+          <li><a href="services.html#automation" style="color:var(--ink);font-size:15px;">Automation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:22px;">Work</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="project.html" style="color:var(--ink);font-size:15px;">Projects</a></li>
+          <li><a href="project.html#ticketing" style="color:var(--ink);font-size:15px;">Case Studies</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:22px;">About</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="about.html#story" style="color:var(--ink);font-size:15px;">My Story</a></li>
+          <li><a href="experience.html" style="color:var(--ink);font-size:15px;">Résumé</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:22px;">Contact</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="index.html#contact" style="color:var(--ink);font-size:15px;">Email</a></li>
+          <li><a href="index.html#" style="color:var(--ink);font-size:15px;">LinkedIn</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:22px;">Resources</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="#templates" style="color:var(--ink);font-size:15px;">Templates</a></li>
+          <li><a href="#faq" style="color:var(--ink);font-size:15px;">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="max-width:1280px;margin:44px auto 0;padding-top:26px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+      <span>© 2026 Mael. Portfolio site.</span>
+      <div style="display:flex;gap:26px;flex-wrap:wrap;">
+        <a href="index.html#" style="color:var(--muted);">Privacy Policy</a>
+        <a href="index.html#" style="color:var(--muted);">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL ================= -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModalFromBackdrop(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Template</h2>
+          <div class="sub" id="modalSub"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-toolbar">
+        <button class="btn small dark" onclick="copyTemplate()">Copy to Clipboard</button>
+        <button class="btn small solid" onclick="downloadTemplate()">Download .txt</button>
+        <span class="copy-status" id="copyStatus"></span>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+ * RESOURCES — three real templates, rendered from structured
+ * data so the same content can be shown formatted (in the
+ * modal) and flattened to plain text (for copy/download).
+ * ══════════════════════════════════════════════════════════ */
+
+var TEMPLATES = [
+  {
+    id:"sop",
+    tag:"Process Documentation",
+    glyph:"☑",
+    title:"Standard Operating Procedure (SOP) Template",
+    blurb:"The exact structure I use to turn a workflow living in someone's head — or scattered across six Slack threads — into documentation a team can follow without asking a follow-up question.",
+    filename:"SOP-Template.txt",
+    sections:[
+      { heading:"Header", type:"fields", items:[
+        ["SOP Title","<< e.g. Processing a Delivery Rerouting Request >>"],
+        ["SOP ID","<< e.g. OPS-014 >>"],
+        ["Owner","<< name / role responsible for keeping this current >>"],
+        ["Last Reviewed","<< date >>"],
+        ["Version","<< v1.0 >>"]
+      ]},
+      { heading:"Purpose", type:"text",
+        text:"One to two sentences: why this SOP exists and what problem it prevents. Example — \"Ensures rerouting requests are actioned consistently, without creating duplicate deliveries or missed stops.\"" },
+      { heading:"Scope", type:"text",
+        text:"Who this applies to, and what it does NOT cover. Example — \"Applies to all Field Agents and Support Teammates handling live route changes. Does not cover cross-zone reassignments — see OPS-015.\"" },
+      { heading:"Trigger", type:"text",
+        text:"The specific event that starts this process. Example — \"Customer or recipient requests a delivery address change after the route has already started.\"" },
+      { heading:"Prerequisites", type:"list", items:[
+        "Access to the route management tool",
+        "Confirmation of the new address (in writing or recorded)",
+        "Knowledge of the current delivery zone boundaries"
+      ]},
+      { heading:"Step-by-Step Procedure", type:"numbered", items:[
+        "Confirm the new address falls within the same delivery zone as the original stop.",
+        "If in-zone: update the stop directly in the route app and note the reason for the change.",
+        "If cross-zone: do not update directly — escalate to Support to reassign the stop (see Escalation Path below).",
+        "Notify the recipient of the updated delivery window, if it changes.",
+        "Log the change in the stop notes with timestamp and reason."
+      ]},
+      { heading:"Decision Points / Exceptions", type:"list", items:[
+        "If the recipient cannot be reached to confirm the new address → hold the original stop, do not reroute on unconfirmed information.",
+        "If the new address is outside the standard service area → escalate to Support before making any change.",
+        "If this is the second reroute request for the same stop → flag for a supervisor review rather than actioning it again."
+      ]},
+      { heading:"Escalation Path", type:"text",
+        text:"Who to contact, and when. Example — \"Cross-zone reroutes and unconfirmed-address cases go to the Support queue, tagged 'Rerouting.' Response target: within 1 business hour.\"" },
+      { heading:"Related SOPs", type:"list", items:[
+        "OPS-015 — Cross-Zone Reassignment",
+        "OPS-009 — Address Correction"
+      ]},
+      { heading:"Revision History", type:"table",
+        headers:["Date","Version","Change","Author"],
+        rows:[
+          ["<< date >>","v1.0","Initial version","<< name >>"],
+          ["","","",""]
+        ]}
+    ]
+  },
+  {
+    id:"qa",
+    tag:"Quality Assurance",
+    glyph:"👁",
+    title:"QA Scorecard Template",
+    blurb:"A weighted scoring template built for calibration — clear enough that two reviewers land on the same score independently, which is the actual point of calibration.",
+    filename:"QA-Scorecard-Template.txt",
+    sections:[
+      { heading:"Header", type:"fields", items:[
+        ["Agent / Teammate","<< name >>"],
+        ["Reviewer","<< name >>"],
+        ["Date Reviewed","<< date >>"],
+        ["Interaction / Ticket ID","<< ID >>"],
+        ["Channel","<< chat / call / email >>"]
+      ]},
+      { heading:"Scoring Categories", type:"table",
+        headers:["Category","Weight","Pass Criteria"],
+        rows:[
+          ["Opening & Verification","10%","Greeted per standard, confirmed identity/details before proceeding"],
+          ["Process / SOP Adherence","30%","Followed the correct SOP for this scenario, no skipped steps"],
+          ["Accuracy of Information","25%","Information given was correct and complete — no guessing presented as fact"],
+          ["Communication Clarity & Tone","15%","Clear, professional, appropriately paced — matched the customer's tone"],
+          ["Resolution & Ownership","15%","Issue was resolved or clearly escalated with a next step communicated"],
+          ["Compliance & Documentation","5%","Interaction logged correctly, required disclosures given"]
+        ]},
+      { heading:"Scoring Formula", type:"text",
+        text:"Score = sum of (category weight × pass/fail, where pass = 100%, fail = 0%) across all six categories. A single critical error (e.g. a compliance miss) can zero the overall score regardless of other categories — define your critical-error list separately and reference it here." },
+      { heading:"Score Thresholds", type:"list", items:[
+        "95%+ — Meets Expectations, no action needed",
+        "85–94% — Coaching Note logged, monitor next 3 interactions",
+        "Below 85% — Formal coaching conversation required within 48 hours"
+      ]},
+      { heading:"Coaching Notes", type:"text",
+        text:"<< Free text — specific, behavior-based observations. Avoid vague notes like \"needs improvement\"; instead: \"Did not confirm the recipient's identity before sharing delivery status — walk through the verification step in OPS-002.\" >>" },
+      { heading:"Calibration Flag", type:"text",
+        text:"☐ Flag this scorecard for the next calibration session (use when the correct score itself is genuinely ambiguous, not just when the agent scored low)." }
+    ]
+  },
+  {
+    id:"onboarding",
+    tag:"Client Operations",
+    glyph:"📋",
+    title:"Client Onboarding Checklist",
+    blurb:"What I actually walk through with a new client in the first month — so the relationship starts with a shared understanding of scope, access, and cadence instead of assumptions.",
+    filename:"Client-Onboarding-Checklist.txt",
+    sections:[
+      { heading:"Pre-Kickoff (Before Day 1)", type:"list", items:[
+        "Scope and deliverables confirmed in writing",
+        "Access granted to required tools (Sheets, Slack, ticketing system, etc.)",
+        "Single point of contact identified on the client side",
+        "Preferred communication channel and response-time expectations agreed",
+        "Reporting cadence agreed (e.g. weekly summary every Friday)"
+      ]},
+      { heading:"Week 1", type:"list", items:[
+        "Kickoff call: walk through current workflows as they actually happen, not as documented",
+        "Identify one or two \"quick win\" fixes that can ship in week 1 to build early trust",
+        "Map existing tools and where data currently lives",
+        "Confirm escalation path — who to contact if something is blocking, and how urgently"
+      ]},
+      { heading:"Weeks 2–4", type:"list", items:[
+        "Shadow or document the core recurring process end-to-end",
+        "Draft the first SOP and get it reviewed by whoever actually performs the task",
+        "Deliver the first full status report on the agreed cadence",
+        "Flag any workflow that looks ready for automation, with a rough time-savings estimate"
+      ]},
+      { heading:"Ongoing Cadence", type:"list", items:[
+        "Weekly or biweekly status update (per agreed cadence)",
+        "Monthly review: what shipped, what's blocked, what's next",
+        "Quarterly check-in on whether the original scope still fits how the client's team has grown"
+      ]},
+      { heading:"Notes", type:"text",
+        text:"This checklist is a starting skeleton — the actual cadence, channels, and week-1 quick wins should flex to match the client's existing tools and team size rather than forcing a fixed process onto them." }
+    ]
+  }
+];
+
+var FAQS = [
+  { q:"How do you typically start with a new client?",
+    a:"With a short scoping call to understand the current workflow as it actually happens — not the documented version. From there I confirm access, agree a reporting cadence, and aim to ship one small, visible fix in week one before tackling anything larger." },
+  { q:"What tools do I need to already have?",
+    a:"None specifically — I work inside whatever your team already uses (Google Sheets, Notion, Slack, Zendesk, etc.) rather than asking you to adopt new tools for my sake. If something genuinely needs a new tool, I'll flag it and explain why before recommending it." },
+  { q:"How do you handle time zones?",
+    a:"I'm based in the Philippines and have worked BPO shifts covering different regions, so overlap windows are usually workable. Response-time expectations and preferred hours get agreed explicitly during onboarding rather than assumed." },
+  { q:"Do you write SOPs, or just follow existing ones?",
+    a:"Both — writing new SOPs from an undocumented process is a core part of the work, using the same template shown above. Existing SOPs get reviewed and tightened rather than replaced outright, unless they're clearly not working." },
+  { q:"What does a QA/calibration engagement actually involve?",
+    a:"Building or refining a scorecard like the one above, then running calibration sessions where reviewers score the same sample interactions and reconcile any disagreement — the goal is that two different reviewers land on the same score independently." },
+  { q:"How is pricing structured?",
+    a:"Depends on scope — some work fits a fixed project rate (e.g. building a specific SOP library), other work is better suited to an ongoing hourly or retainer arrangement. Happy to talk through which fits once the scope is clear." }
+];
+
+/* ── Render template cards ── */
+function esc(s){ return String(s===undefined||s===null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function renderTemplateGrid(){
+  var grid=document.getElementById("templateGrid");
+  grid.innerHTML = TEMPLATES.map(function(t){
+    return '<div class="template-card">'
+      +'<div class="template-glyph">'+t.glyph+'</div>'
+      +'<span class="template-tag">'+esc(t.tag)+'</span>'
+      +'<h3>'+esc(t.title)+'</h3>'
+      +'<p>'+esc(t.blurb)+'</p>'
+      +'<div class="template-actions"><button class="template-open" onclick="openTemplate(&quot;'+t.id+'&quot;)">Preview &amp; Copy →</button></div>'
+      +'</div>';
+  }).join('');
+}
+
+/* ── Render FAQ ── */
+function renderFaq(){
+  var list=document.getElementById("faqList");
+  list.innerHTML = FAQS.map(function(f,i){
+    return '<div class="faq-item" id="faqItem'+i+'">'
+      +'<button class="faq-q" onclick="toggleFaq('+i+')">'
+        +'<span>'+esc(f.q)+'</span>'
+        +'<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      +'</button>'
+      +'<div class="faq-a-wrap"><div><p class="faq-a">'+esc(f.a)+'</p></div></div>'
+      +'</div>';
+  }).join('');
+}
+function toggleFaq(i){
+  document.getElementById("faqItem"+i).classList.toggle("open");
+}
+
+/* ── Modal: formatted render ── */
+var currentTemplate = null;
+
+function sectionHtml(sec){
+  var html = '<div class="tpl-section"><h4>'+esc(sec.heading)+'</h4>';
+  if(sec.type==="text"){
+    html += '<div class="body-text">'+esc(sec.text)+'</div>';
+  } else if(sec.type==="list"){
+    html += '<ul>'+sec.items.map(function(i){ return '<li>'+esc(i)+'</li>'; }).join('')+'</ul>';
+  } else if(sec.type==="numbered"){
+    html += '<ol>'+sec.items.map(function(i){ return '<li>'+esc(i)+'</li>'; }).join('')+'</ol>';
+  } else if(sec.type==="fields"){
+    html += '<ul>'+sec.items.map(function(pair){ return '<li><strong>'+esc(pair[0])+':</strong> '+esc(pair[1])+'</li>'; }).join('')+'</ul>';
+  } else if(sec.type==="table"){
+    html += '<table class="tpl-table"><thead><tr>'+sec.headers.map(function(h){ return '<th>'+esc(h)+'</th>'; }).join('')+'</tr></thead><tbody>'
+      + sec.rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td>'+esc(c)+'</td>'; }).join('')+'</tr>'; }).join('')
+      + '</tbody></table>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function openTemplate(id){
+  var t = TEMPLATES.find(function(x){ return x.id===id; });
+  if(!t) return;
+  currentTemplate = t;
+  document.getElementById("modalTitle").textContent = t.title;
+  document.getElementById("modalSub").textContent = t.tag + " · plain-text, no formatting locked in";
+  document.getElementById("modalBody").innerHTML = t.sections.map(sectionHtml).join('');
+  document.getElementById("copyStatus").textContent = "";
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal(){ document.getElementById("modalBackdrop").classList.remove("open"); }
+function closeModalFromBackdrop(e){ if(e.target.id==="modalBackdrop") closeModal(); }
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeModal(); });
+
+/* ── Flatten a template to plain text (for copy / download) ── */
+function flattenTemplate(t){
+  var lines = [t.title, "".padEnd(t.title.length,"="), ""];
+  t.sections.forEach(function(sec){
+    lines.push(sec.heading.toUpperCase());
+    lines.push("-".repeat(sec.heading.length));
+    if(sec.type==="text"){
+      lines.push(sec.text);
+    } else if(sec.type==="list"){
+      sec.items.forEach(function(i){ lines.push("- "+i); });
+    } else if(sec.type==="numbered"){
+      sec.items.forEach(function(i,idx){ lines.push((idx+1)+". "+i); });
+    } else if(sec.type==="fields"){
+      sec.items.forEach(function(pair){ lines.push(pair[0]+": "+pair[1]); });
+    } else if(sec.type==="table"){
+      lines.push(sec.headers.join(" | "));
+      sec.rows.forEach(function(r){ lines.push(r.join(" | ")); });
+    }
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+function copyTemplate(){
+  if(!currentTemplate) return;
+  var text = flattenTemplate(currentTemplate);
+  var statusEl = document.getElementById("copyStatus");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      statusEl.textContent = "Copied to clipboard.";
+      setTimeout(function(){ statusEl.textContent=""; }, 2500);
+    }).catch(function(){
+      fallbackCopy(text, statusEl);
+    });
+  } else {
+    fallbackCopy(text, statusEl);
+  }
+}
+function fallbackCopy(text, statusEl){
+  var ta=document.createElement("textarea");
+  ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ document.execCommand("copy"); statusEl.textContent="Copied to clipboard."; }
+  catch(e){ statusEl.textContent="Copy failed — select and copy manually."; }
+  document.body.removeChild(ta);
+  setTimeout(function(){ statusEl.textContent=""; }, 2500);
+}
+
+function downloadTemplate(){
+  if(!currentTemplate) return;
+  var text = flattenTemplate(currentTemplate);
+  var blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = currentTemplate.filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ── Mobile hamburger menu (shared pattern) ── */
+(function(){
+  const btn = document.getElementById('hamburgerBtn');
+  const menu = document.getElementById('mobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', ()=>{
+    const isOpen = menu.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  menu.querySelectorAll('.mobile-menu-item').forEach(item=>{
+    const toggle = item.querySelector('.mobile-menu-toggle');
+    toggle.addEventListener('click', ()=>{
+      const wasOpen = item.classList.contains('open');
+      menu.querySelectorAll('.mobile-menu-item').forEach(i=> i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+  menu.querySelectorAll('.mobile-submenu a, .mobile-menu-inner > .track-btn').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+  window.addEventListener('resize', ()=>{
+    if(window.innerWidth > 900){
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+
+/* ── Nav dropdowns — tap-to-toggle for touch devices ── */
+(function(){
+  const items = document.querySelectorAll('.nav-links li.has-dropdown');
+  items.forEach(item=>{
+    item.addEventListener('click', (e)=>{
+      if(window.matchMedia('(hover: hover)').matches) return;
+      e.stopPropagation();
+      const wasOpen = item.classList.contains('open');
+      items.forEach(i=> i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+  document.addEventListener('click', ()=>{ items.forEach(i=> i.classList.remove('open')); });
+})();
+
+/* If arriving with a hash, scroll the right section into view under the sticky header. */
+window.addEventListener('load', ()=>{
+  if(location.hash){
+    const el = document.querySelector(location.hash);
+    if(el) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+  }
+});
+
+renderTemplateGrid();
+renderFaq();
+</script>
+</body>
+</html>
