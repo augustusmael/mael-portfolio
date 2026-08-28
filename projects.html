@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Mael | Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6;
+    --paper:#FBF9F3;
+    --ink:#1E1C18;
+    --red:#E24E32;
+    --red-dark:#C93F26;
+    --blue:#AFC8DE;
+    --line:#D8D3C4;
+    --muted:#5B564C;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;overflow-x:clip;width:100%;max-width:100vw;overscroll-behavior-x:none;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:clip;width:100%;max-width:100vw;position:relative;
+    overscroll-behavior-x:none;touch-action:pan-y;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400; overflow-wrap:break-word; word-break:break-word;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 48px;}
+
+  /* ===== Ribbon / Nav (shared with index.html) ===== */
+  .ribbon{
+    background:var(--red);color:#fff;font-size:12px;letter-spacing:.02em;
+    padding:5px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:6px 14px;text-align:center;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+  }
+  .ribbon b{font-weight:700;}
+  .ribbon .pill{
+    background:var(--paper);color:var(--red-dark);padding:5px 16px;border-radius:var(--radius);
+    border:1px solid var(--ink);font-weight:600;font-size:12px;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .ribbon .pill:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .site-header{position:sticky;top:0;z-index:1000;}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;padding:22px 48px;
+    max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);
+  }
+  .logo{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--red);letter-spacing:-.01em;}
+  .logo span{color:var(--ink);}
+  .nav-links{display:flex;gap:20px;list-style:none;font-weight:800;font-size:18px;}
+  .nav-links li{position:relative;display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--ink);padding:8px 0;}
+  .nav-links li svg{opacity:.55;width:13px;height:13px;transition:transform .15s ease;}
+  .nav-links li.has-dropdown:hover svg,
+  .nav-links li.has-dropdown.open svg{transform:rotate(180deg);opacity:.9;}
+  .nav-links li.has-dropdown:hover,
+  .nav-links li.has-dropdown.open{color:var(--red);}
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 14px);left:0;background:var(--paper);border-radius:var(--radius);
+    border:1px solid var(--ink);box-shadow:var(--shadow-md);min-width:220px;padding:8px 24px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;z-index:1100;
+  }
+  .nav-links li.has-dropdown:hover .nav-dropdown,
+  .nav-links li.has-dropdown.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+  .nav-dropdown a{display:block;padding:16px 0;font-size:17px;font-weight:600;color:var(--ink);border-top:1px solid var(--line);white-space:nowrap;}
+  .nav-dropdown a:first-child{border-top:none;}
+  .nav-dropdown a:hover{color:var(--red);}
+  .track-btn{
+    background:var(--red);color:#fff;padding:17px 26px;border-radius:var(--radius);border:1px solid var(--ink);
+    font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;
+    transition:background .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .track-btn:hover{background:var(--red-dark);transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .hamburger{
+    display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;
+    background:transparent;border:none;cursor:pointer;padding:0;flex-shrink:0;
+  }
+  .hamburger span{display:block;width:26px;height:2px;background:var(--ink);border-radius:2px;transition:transform .25s ease, opacity .2s ease;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-menu{max-height:0;overflow:hidden;background:var(--cream);border-top:0px solid var(--line);transition:max-height .35s ease, border-top-width .35s ease;}
+  .mobile-menu.open{max-height:500px;}
+  .mobile-menu-inner{padding:2px 24px 12px;}
+  .mobile-menu-toggle{
+    all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;
+    padding:6px 0;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .mobile-menu-toggle svg{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .2s ease;}
+  .mobile-menu-item.open .mobile-menu-toggle svg{transform:rotate(180deg);opacity:.9;}
+  .mobile-menu-item.open .mobile-menu-toggle{color:var(--red);}
+  .mobile-submenu{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .mobile-menu-item.open .mobile-submenu{max-height:160px;}
+  .mobile-submenu a{display:block;padding:5px 0 5px 14px;font-size:12px;font-weight:600;color:var(--muted);}
+  .mobile-submenu a:hover{color:var(--red);}
+  .mobile-menu .track-btn{justify-content:center;margin-top:8px;padding:9px 22px;font-size:13px;width:100%;}
+
+  @media(max-width:900px){
+    nav{padding:10px 24px;}
+    .logo{font-size:24px;}
+    .hamburger{width:32px;height:32px;gap:4px;display:flex;}
+    .hamburger span{width:20px;}
+    .nav-links{display:none;}
+    .desktop-only{display:none;}
+  }
+  @media(max-width:600px){
+    .ribbon{flex-direction:column;padding:7px 24px;gap:4px;font-size:10px;}
+    .ribbon .pill{padding:3px 12px;font-size:10px;}
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:var(--ink);
+    font-weight:700;font-size:17px;padding:20px 32px;border-radius:var(--radius);border:1px solid var(--ink);
+    margin-top:32px;transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-sm);}
+  .btn.solid{background:var(--red);color:#fff;}
+  .btn.solid:hover{background:var(--red-dark);}
+  .btn.paper{background:var(--paper);color:var(--ink);}
+  .btn.paper:hover{background:#fff;}
+
+  /* ===== Projects hero (red band, per reference) ===== */
+  .proj-hero{
+    background:var(--red);
+    color:#fff;
+    text-align:center;
+    padding:96px 32px 110px;
+    position:relative;
+    overflow:hidden;
+  }
+  .proj-hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px);
+    pointer-events:none;
+  }
+  .proj-hero-inner{position:relative;max-width:820px;margin:0 auto;}
+  .proj-eyebrow{
+    display:inline-block;
+    font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,255,255,.85);
+    margin-bottom:22px;
+  }
+  .proj-hero h1{
+    font-size:64px;line-height:1.08;font-weight:400;color:#fff;letter-spacing:-.02em;
+  }
+  .proj-hero p{
+    margin:26px auto 0;font-size:19px;line-height:1.6;color:rgba(255,255,255,.88);
+    max-width:560px;font-weight:400;
+  }
+  .proj-hero .btn{margin-left:auto;margin-right:auto;}
+  @media(max-width:700px){
+    .proj-hero{padding:56px 24px 72px;}
+    .proj-hero h1{font-size:clamp(30px, 8vw, 40px);}
+    .proj-hero p{font-size:16px;}
+  }
+
+  /* ===== Card grid (per reference: media block + white body) ===== */
+  .proj-grid-section{
+    max-width:1280px;margin:0 auto;padding:80px 48px 40px;
+  }
+  .proj-grid-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+    margin-bottom:40px;flex-wrap:wrap;
+  }
+  .proj-grid-head h2{font-size:32px;font-weight:400;}
+  .proj-grid-head .count{font-size:14px;color:var(--muted);font-weight:600;}
+  .proj-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:28px;
+  }
+  .proj-card{
+    display:flex;flex-direction:column;
+    background:var(--paper);
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
+    overflow:hidden;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .proj-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .proj-media{
+    position:relative;
+    display:block;
+    aspect-ratio:16/11;
+    background:var(--pm-bg, #141210);
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    overflow:hidden;
+  }
+  .proj-glyph{
+    position:absolute;
+    right:14px;bottom:6px;
+    font-size:96px;
+    line-height:1;
+    opacity:.16;
+    color:#fff;
+  }
+  .proj-tag{
+    align-self:flex-start;
+    background:var(--red);
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    position:relative;
+    z-index:1;
+  }
+  .proj-media-title{
+    position:relative;
+    z-index:1;
+    color:#fff;
+    font-size:24px;
+    line-height:1.18;
+    font-weight:500;
+  }
+  .proj-body{
+    padding:26px 26px 28px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    flex:1;
+  }
+  .proj-meta{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .proj-pill{
+    background:var(--cream);
+    border:1px solid var(--ink);
+    border-radius:var(--radius);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:5px 10px;
+    color:var(--ink);
+  }
+  .proj-meta .proj-sub{font-size:13px;color:var(--muted);font-weight:600;}
+  .proj-body p{
+    color:var(--muted);
+    font-size:15.5px;
+    line-height:1.55;
+    flex:1;
+  }
+  .proj-link{
+    color:var(--red-dark);
+    font-weight:700;
+    font-size:15px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:gap .15s ease, color .15s ease;
+  }
+  .proj-link:hover{gap:10px;color:var(--red);}
+
+  @media(max-width:900px){
+    .proj-grid-section{padding:56px 24px 20px;}
+    .proj-grid{grid-template-columns:1fr;gap:22px;}
+    .proj-media-title{font-size:21px;}
+  }
+
+  /* ===== Ticket-journey flow strip (echoes reference's route illustration) ===== */
+  .proj-flow{
+    max-width:1280px;margin:0 auto;padding:70px 48px 20px;
+  }
+  .proj-flow h3{
+    text-align:center;font-size:26px;font-weight:400;margin-bottom:52px;
+  }
+  .flow-row{
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+  }
+  .flow-line{
+    position:absolute;
+    top:29px;left:0;right:0;
+    height:2px;
+    background:var(--line);
+    z-index:0;
+  }
+  .flow-step{
+    position:relative;
+    z-index:1;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:14px;
+  }
+  .flow-dot{
+    width:58px;height:58px;
+    border-radius:var(--radius);
+    background:var(--paper);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;
+  }
+  .flow-step:nth-child(2) .flow-dot,
+  .flow-step:nth-child(4) .flow-dot{background:var(--blue);}
+  .flow-step:last-child .flow-dot{background:var(--red);color:#fff;}
+  .flow-step span{font-weight:700;font-size:14.5px;max-width:130px;}
+
+  @media(max-width:700px){
+    .proj-flow{padding:48px 24px 10px;}
+    .flow-row{flex-direction:column;align-items:stretch;gap:22px;}
+    .flow-line{display:none;}
+    .flow-step{flex-direction:row;text-align:left;justify-content:flex-start;}
+    .flow-dot{flex-shrink:0;}
+  }
+
+  /* ===== Footer (shared with index.html) ===== */
+  footer{background:var(--cream);padding:90px 48px 44px;border-top:1px solid var(--line);}
+  .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.3fr repeat(5,1fr);gap:32px;}
+  .footer-brand .logo{margin-bottom:18px;}
+  .footer-brand p{color:var(--muted);font-size:16px;margin-bottom:24px;}
+  .socials{display:flex;gap:14px;}
+  .socials a{width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .footer-col h4{font-size:17px;font-weight:700;margin-bottom:22px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:16px;}
+  .footer-col a{color:var(--ink);font-size:15px;}
+  .footer-col a:hover{color:var(--red);}
+  .footer-cta{
+    max-width:1280px;margin:70px auto 0;padding-top:44px;border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;
+  }
+  .footer-cta h4{font-size:26px;font-weight:400;font-family:'Fraunces',serif;margin-bottom:8px;}
+  .footer-cta p{color:var(--muted);font-size:16px;}
+  .footer-cta .btn{margin-top:0;background:var(--ink);color:#fff;}
+  .footer-bottom{
+    max-width:1280px;margin:44px auto 0;padding-top:26px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  .footer-bottom .links{display:flex;gap:26px;flex-wrap:wrap;}
+  .footer-bottom a{color:var(--muted);}
+  .footer-bottom a:hover{color:var(--ink);}
+
+  @media(max-width:900px){
+    footer{padding:56px 24px 32px;}
+    .footer-inner{grid-template-columns:1fr 1fr;gap:28px 24px;max-width:100%;}
+    .footer-inner > *{min-width:0;}
+    .footer-brand .logo{font-size:26px;}
+    .footer-cta{margin-top:40px;padding-top:28px;flex-direction:column;align-items:flex-start;}
+    .footer-cta .btn{width:100%;justify-content:center;}
+    .footer-bottom{margin-top:28px;padding-top:18px;flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="site-header">
+    <div class="ribbon">
+      <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
+      <a class="pill" href="index.html#contact">Get In Touch</a>
+    </div>
+
+    <nav>
+      <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+      <ul class="nav-links">
+        <li class="has-dropdown">Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="nav-dropdown">
+            <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+            <a href="services.html#automation">Workflow Automation</a>
+            <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+            <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+            <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+            <a href="services.html#client-communication">Client Communication</a>
+          </div>
+        </li>
+        <li class="has-dropdown"><a href="experience.html">Experience</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="nav-dropdown">
+            <a href="experience.html#taskus-sme">SME · TaskUs</a>
+            <a href="experience.html#taskus-csr">CSR · TaskUs</a>
+            <a href="experience.html#alorica-csr">CSR · Alorica</a>
+            <a href="experience.html#foundation">Education &amp; Technical Background</a>
+          </div>
+        </li>
+        <li class="has-dropdown open">Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="nav-dropdown">
+            <a href="project.html#ticketing">Campaign Portal Ticketing System</a>
+            <a href="project.html#library">Ticket Library</a>
+            <a href="project.html#knowledge-base">Knowledge Base Sample</a>
+          </div>
+        </li>
+        <li class="has-dropdown"><a href="about.html">About</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="nav-dropdown">
+            <a href="about.html#mission">My Philosophy</a>
+            <a href="about.html#story">My Story</a>
+            <a href="about.html#glance">At a Glance</a>
+          </div>
+        </li>
+        <li class="has-dropdown">Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="nav-dropdown">
+            <a href="#">Placeholder item 1</a>
+            <a href="#">Placeholder item 2</a>
+          </div>
+        </li>
+      </ul>
+      <a class="track-btn desktop-only" href="index.html#contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        View Résumé
+      </a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-inner">
+        <div class="mobile-menu-item">
+          <button class="mobile-menu-toggle" type="button">Services
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-submenu">
+            <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+            <a href="services.html#automation">Workflow Automation</a>
+            <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+            <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+            <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+            <a href="services.html#client-communication">Client Communication</a>
+          </div>
+        </div>
+        <div class="mobile-menu-item">
+          <button class="mobile-menu-toggle" type="button">Experience
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-submenu">
+            <a href="experience.html">View Full Experience</a>
+            <a href="experience.html#taskus-sme">SME · TaskUs</a>
+            <a href="experience.html#taskus-csr">CSR · TaskUs</a>
+            <a href="experience.html#alorica-csr">CSR · Alorica</a>
+            <a href="experience.html#foundation">Education &amp; Technical Background</a>
+          </div>
+        </div>
+        <div class="mobile-menu-item open">
+          <button class="mobile-menu-toggle" type="button">Projects
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-submenu">
+            <a href="project.html#ticketing">Campaign Portal Ticketing System</a>
+            <a href="project.html#library">Ticket Library</a>
+            <a href="project.html#knowledge-base">Knowledge Base Sample</a>
+          </div>
+        </div>
+        <div class="mobile-menu-item">
+          <button class="mobile-menu-toggle" type="button">About
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-submenu">
+            <a href="about.html">View About Page</a>
+            <a href="about.html#mission">My Philosophy</a>
+            <a href="about.html#story">My Story</a>
+            <a href="about.html#glance">At a Glance</a>
+          </div>
+        </div>
+        <div class="mobile-menu-item">
+          <button class="mobile-menu-toggle" type="button">Resources
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-submenu">
+            <a href="#">Placeholder item 1</a>
+            <a href="#">Placeholder item 2</a>
+          </div>
+        </div>
+        <a class="track-btn" href="index.html#contact">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          View Résumé
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Hero ===== -->
+  <section class="proj-hero">
+    <div class="proj-hero-inner">
+      <span class="proj-eyebrow">Projects</span>
+      <h1>Simulations of the systems I run</h1>
+      <p>Three working mock-ups, built from how campaign support actually operates — a ticketing portal, a library of resolved tickets, and a knowledge base article.</p>
+      <a class="btn paper" href="#projects-grid">See the projects ↓</a>
+    </div>
+  </section>
+
+  <!-- ===== Card grid ===== -->
+  <section class="proj-grid-section" id="projects-grid">
+    <div class="proj-grid-head">
+      <h2>Click into a simulation</h2>
+      <span class="count">3 projects</span>
+    </div>
+    <div class="proj-grid">
+
+      <article class="proj-card" id="ticketing">
+        <a class="proj-media" href="ticketing-system.html" style="--pm-bg:#141210;">
+          <span class="proj-tag">Simulation</span>
+          <span class="proj-glyph">🎫</span>
+          <span class="proj-media-title">Campaign Portal Ticketing System</span>
+        </a>
+        <div class="proj-body">
+          <div class="proj-meta">
+            <span class="proj-pill">Interactive Demo</span>
+            <span class="proj-sub">Ticketing workflow</span>
+          </div>
+          <p>A working mock of the queue I ran daily — intake, prioritization, and status updates, all in one view, the way a real campaign portal behaves.</p>
+          <a class="proj-link" href="ticketing-system.html">Open Simulation →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" id="library">
+        <a class="proj-media" href="ticket-library.html" style="--pm-bg:#2A3A4A;">
+          <span class="proj-tag">Reference Set</span>
+          <span class="proj-glyph">🗂</span>
+          <span class="proj-media-title">Ticket Library</span>
+        </a>
+        <div class="proj-body">
+          <div class="proj-meta">
+            <span class="proj-pill">Browsable</span>
+            <span class="proj-sub">Resolved tickets</span>
+          </div>
+          <p>A searchable set of real-style resolved tickets, showing how issues were logged, triaged, escalated when needed, and closed out.</p>
+          <a class="proj-link" href="ticket-library.html">Browse Library →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" id="knowledge-base">
+        <a class="proj-media" href="knowledge-base.html" style="--pm-bg:#4A2A22;">
+          <span class="proj-tag">Documentation</span>
+          <span class="proj-glyph">📚</span>
+          <span class="proj-media-title">Knowledge Base Sample</span>
+        </a>
+        <div class="proj-body">
+          <div class="proj-meta">
+            <span class="proj-pill">Sample Article</span>
+            <span class="proj-sub">SOP &amp; documentation</span>
+          </div>
+          <p>A sample knowledge base article, written the way I document a process for a team — clear steps, screenshots where they help, no guesswork.</p>
+          <a class="proj-link" href="knowledge-base.html">Read Sample →</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ===== Ticket-journey flow strip ===== -->
+  <section class="proj-flow" aria-label="How a ticket moves through the simulation">
+    <h3>How a ticket moves through the system</h3>
+    <div class="flow-row">
+      <div class="flow-line"></div>
+      <div class="flow-step">
+        <div class="flow-dot">✉</div>
+        <span>Submitted to the portal</span>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🗂</div>
+        <span>Logged in the ticket library</span>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">⚙</div>
+        <span>Worked &amp; updated</span>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">📚</div>
+        <span>Answer added to the knowledge base</span>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">✓</div>
+        <span>Closed &amp; reported</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+        <p>Operations, quality, and automation — delivered with care.</p>
+        <div class="socials">
+          <a href="#">in</a>
+          <a href="#">✉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul><li><a href="services.html">Ops Support</a></li><li><a href="services.html#automation">Automation</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Work</h4>
+        <ul><li><a href="project.html">Projects</a></li><li><a href="project.html#ticketing">Case Studies</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul><li><a href="about.html#story">My Story</a></li><li><a href="experience.html">Résumé</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul><li><a href="#">Email</a></li><li><a href="#">LinkedIn</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul><li><a href="#">Blog</a></li><li><a href="#">Résumé PDF</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-cta">
+      <div>
+        <h4>Let's talk</h4>
+        <p>Open to remote engagements across time zones.</p>
+      </div>
+      <a class="btn" href="index.html#contact">Get In Touch</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mael. Portfolio site.</span>
+      <div class="links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav dropdowns — hover handles desktop (CSS); this adds tap-to-toggle for touch devices
+    (function(){
+      const items = document.querySelectorAll('.nav-links li.has-dropdown');
+      items.forEach(item=>{
+        item.addEventListener('click', (e)=>{
+          if(window.matchMedia('(hover: hover)').matches) return;
+          e.stopPropagation();
+          const wasOpen = item.classList.contains('open');
+          items.forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      document.addEventListener('click', ()=>{
+        items.forEach(i=> i.classList.remove('open'));
+      });
+    })();
+
+    // Mobile hamburger menu toggle
+    (function(){
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+      btn.addEventListener('click', ()=>{
+        const isOpen = menu.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      menu.querySelectorAll('.mobile-menu-item').forEach(item=>{
+        const toggle = item.querySelector('.mobile-menu-toggle');
+        toggle.addEventListener('click', ()=>{
+          const wasOpen = item.classList.contains('open');
+          menu.querySelectorAll('.mobile-menu-item').forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      menu.querySelectorAll('.mobile-submenu a, .mobile-menu-inner > .track-btn').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', ()=>{
+        if(window.innerWidth > 900){
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
