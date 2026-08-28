@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket Library — Mael | Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6; --paper:#FBF9F3; --ink:#1E1C18;
+    --red:#E24E32; --red-dark:#C93F26; --blue:#AFC8DE;
+    --line:#D8D3C4; --muted:#5B564C;
+    --green:#2F6B3A; --green-tint:#E4EEE4;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{overflow-x:clip;width:100%;}
+  body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:clip;}
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;letter-spacing:-.015em;font-weight:400;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;}
+
+  .sim-ribbon{background:var(--ink);color:var(--paper);font-size:12px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;flex-wrap:wrap;}
+  .sim-ribbon b{color:var(--red);}
+  .sim-ribbon a{text-decoration:underline;text-underline-offset:2px;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);}
+  .logo{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--red);}
+  .logo span{color:var(--ink);}
+  .back-link{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;}
+  .back-link:hover{color:var(--red);}
+
+  /* ── Hero ── */
+  .lib-hero{background:var(--red);color:#fff;padding:52px 32px 60px;text-align:center;position:relative;overflow:hidden;}
+  .lib-hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px);pointer-events:none;}
+  .lib-hero-inner{position:relative;max-width:760px;margin:0 auto;}
+  .lib-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:16px;}
+  .lib-hero h1{font-size:clamp(28px,4.5vw,44px);line-height:1.12;}
+  .lib-hero p{margin:18px auto 0;font-size:16px;line-height:1.6;color:rgba(255,255,255,.88);max-width:540px;}
+
+  /* ── Workspace ── */
+  .workspace{max-width:1280px;margin:0 auto;padding:32px 32px 90px;display:grid;grid-template-columns:250px 1fr;gap:28px;align-items:flex-start;}
+  @media(max-width:900px){.workspace{grid-template-columns:1fr;padding:24px 20px 60px;}}
+
+  .sidebar{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:18px;position:sticky;top:16px;}
+  @media(max-width:900px){.sidebar{position:static;}}
+  .search-wrap{position:relative;margin-bottom:20px;}
+  .search-wrap input{width:100%;border:1px solid var(--ink);border-radius:var(--radius);padding:9px 32px 9px 11px;font-size:13px;font-family:inherit;background:var(--cream);outline:none;}
+  .search-wrap input:focus{border-color:var(--red);}
+  .search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-weight:700;color:var(--muted);cursor:pointer;display:none;font-size:14px;}
+  .filter-section{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px;}
+  .filter-section:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .filter-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;}
+  .filter-option{width:100%;background:none;border:none;display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;text-align:left;font-size:12.5px;color:var(--ink);}
+  .filter-box{width:15px;height:15px;border:1px solid var(--ink);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+  .filter-option.active .filter-box{background:var(--red);border-color:var(--red);color:#fff;}
+  .filter-count{margin-left:auto;color:var(--muted);font-size:11px;font-weight:700;}
+  .reset-filter{font-size:11.5px;font-weight:700;color:var(--red-dark);text-decoration:underline;text-underline-offset:2px;background:none;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;}
+
+  /* ── Content ── */
+  .content-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+  .result-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red-dark);margin-bottom:4px;}
+  .result-title{font-size:22px;}
+  .result-summary{color:var(--muted);font-size:13px;margin-top:3px;}
+  .toolbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .view-switcher{display:inline-flex;border:1px solid var(--ink);border-radius:var(--radius);overflow:hidden;}
+  .view-btn{background:var(--paper);border:none;padding:7px 13px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;border-right:1px solid var(--ink);}
+  .view-btn:last-child{border-right:none;}
+  .view-btn.active{background:var(--red);color:#fff;}
+  .sort-select{border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);padding:7px 10px;font-size:12px;font-family:inherit;cursor:pointer;}
+
+  .empty-state{border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow-sm);padding:48px 20px;text-align:center;color:var(--muted);}
+  .empty-state .glyph{font-size:32px;margin-bottom:10px;}
+
+  /* Card view */
+  .featured-card{border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow-sm);padding:14px;display:grid;grid-template-columns:170px 1fr;gap:16px;cursor:pointer;margin-bottom:14px;transition:transform .15s,box-shadow .15s;}
+  .featured-card:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-md);}
+  .tile{background:var(--green);color:#fff;border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:12px;padding:10px;min-height:110px;}
+  .featured-content h3{font-size:18px;margin-bottom:6px;}
+  .card-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em;}
+  .cat-chip{background:var(--cream);border:1px solid var(--ink);border-radius:2px;padding:2px 8px;}
+  .card-summary{color:var(--muted);font-size:13px;line-height:1.5;}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;}
+  .lib-card{border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow-sm);padding:12px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;}
+  .lib-card:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-md);}
+  .lib-card .tile{min-height:80px;margin-bottom:10px;font-size:11px;}
+  .lib-card h4{font-size:14.5px;margin-bottom:6px;line-height:1.3;}
+  .lib-card p{color:var(--muted);font-size:12.5px;line-height:1.5;flex:1;}
+  .card-footer{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:11px;color:var(--red-dark);font-weight:700;text-transform:uppercase;display:flex;justify-content:space-between;}
+
+  /* List view */
+  .list-stack{display:flex;flex-direction:column;gap:10px;}
+  .list-row{border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow-sm);padding:12px;display:grid;grid-template-columns:90px 1fr auto;gap:14px;align-items:center;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+  .list-row:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-md);}
+  .list-row .tile{min-height:64px;font-size:9.5px;padding:6px;}
+  .list-row h4{font-size:15px;margin-bottom:4px;}
+  .list-row p{color:var(--muted);font-size:12.5px;line-height:1.4;}
+  .list-arrow{font-size:18px;color:var(--red);}
+  @media(max-width:560px){.list-row{grid-template-columns:60px 1fr;}.list-arrow{display:none;}}
+
+  /* Table view */
+  .table-shell{overflow-x:auto;border:1px solid var(--ink);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow-sm);}
+  table{width:100%;border-collapse:collapse;min-width:760px;}
+  th{text-align:left;padding:10px 12px;background:var(--cream);border-bottom:2px solid var(--red);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:top;}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover td{background:var(--cream);}
+
+  /* Detail modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(30,28,24,.6);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--cream);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;max-width:760px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden;}
+  .modal-header{padding:18px 22px;border-bottom:2px solid var(--red);background:var(--paper);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+  .modal-header h2{font-size:20px;}
+  .modal-meta{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;}
+  .modal-close{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);width:32px;height:32px;font-weight:700;cursor:pointer;flex-shrink:0;}
+  .modal-body{flex:1;overflow-y:auto;padding:18px 22px;}
+  .detail-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:12px 14px;margin-bottom:12px;}
+  .dc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+  .field-name{font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.03em;}
+  .field-value{font-size:12.5px;line-height:1.4;}
+  .field-block{margin-top:6px;}
+  .resolution-box{border:1px solid var(--green);background:var(--green-tint);}
+  .resolution-tag{display:inline-block;background:var(--green);color:#fff;font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:var(--radius);text-transform:uppercase;margin-bottom:6px;}
+  .activity-item{border-bottom:1px solid var(--line);padding:9px 0;}
+  .activity-item:last-child{border-bottom:none;}
+  .activity-head{display:flex;gap:8px;align-items:center;margin-bottom:3px;flex-wrap:wrap;}
+  .activity-sender{font-weight:700;font-size:12px;}
+  .activity-time{color:var(--muted);font-size:10px;}
+  .activity-type{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:var(--radius);border:1px solid var(--line);background:var(--cream);color:var(--muted);}
+  .activity-type.resolution{background:var(--green);border-color:var(--green);color:#fff;}
+  .activity-text{font-size:12.5px;line-height:1.45;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+
+  <div class="sim-ribbon">
+    <b>SIMULATION</b> — a browsable mock of resolved-ticket documentation from the same portal. Nothing here is a real customer record. <a href="project.html">← Back to Projects</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+    <a class="back-link" href="project.html">← All Projects</a>
+  </nav>
+
+  <section class="lib-hero">
+    <div class="lib-hero-inner">
+      <span class="lib-eyebrow">Ticket Library</span>
+      <h1>Every resolved ticket, organized in one place</h1>
+      <p>A searchable archive of how issues were logged, answered, and closed out — the reference set a teammate or a new SME would actually use.</p>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="search-wrap">
+        <input id="searchInput" type="search" placeholder="Search ID, SOP, summary…" oninput="handleSearch()">
+        <button class="search-clear" id="clearSearchBtn" onclick="clearSearch()">×</button>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">SOP Followed</div>
+        <div id="sopFilters"></div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Type of Assistance</div>
+        <div id="assistFilters"></div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Category</div>
+        <div id="catFilters"></div>
+      </div>
+      <div class="filter-section" style="border-bottom:none;padding-bottom:0;">
+        <button class="reset-filter" onclick="resetFilters()">Reset all</button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="content-toolbar">
+        <div>
+          <div class="result-kicker">Ticket Library</div>
+          <h2 class="result-title" id="resultTitle">All resolved tickets</h2>
+          <div class="result-summary" id="resultSummary"></div>
+        </div>
+        <div class="toolbar-actions">
+          <div class="view-switcher">
+            <button class="view-btn active" data-view="card" onclick="setView('card')">Cards</button>
+            <button class="view-btn" data-view="list" onclick="setView('list')">List</button>
+            <button class="view-btn" data-view="table" onclick="setView('table')">Table</button>
+          </div>
+          <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Ticket ID A–Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <div class="glyph">⌕</div>
+        <div style="font-weight:700;margin-bottom:4px;">No tickets match</div>
+        <div>Try clearing a filter or a different keyword.</div>
+      </div>
+
+      <div id="cardView">
+        <div id="featuredWrap"></div>
+        <div class="card-grid" id="cardGrid"></div>
+      </div>
+      <div id="listView" style="display:none;">
+        <div class="list-stack" id="listStack"></div>
+      </div>
+      <div id="tableView" style="display:none;">
+        <div class="table-shell">
+          <table>
+            <thead><tr><th>Date Resolved</th><th>Ticket</th><th>SOP Followed</th><th>Category</th><th>Claimed By</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModalFromBackdrop(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Ticket</h2>
+          <div class="modal-meta" id="modalMeta"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+ * TICKET LIBRARY — static in-browser archive, no backend.
+ * Reuses the same Loop Fulfillment support-desk fiction as the
+ * Ticketing System simulation, so the two feel like one system.
+ * ══════════════════════════════════════════════════════════ */
+
+var SOPS = ["Address Correction","Delivery Rerouting","Package Refusal Handling","Account Verification",
+  "Delivery Investigation","Missed Instructions","Proof of Delivery Review","Customer Feedback Handling",
+  "Restricted Access Locations","General Process Clarification"];
+var ASSISTANCE_TYPES = ["SOP Clarification","Process Confirmation","Escalation Support","Live Assistance","System/Tool Issue","Training Gap"];
+var CATEGORIES = ["Field Agent","Customer"];
+var SMES = ["Priya R.","Marcus T.","Dana O."];
+
+var items = [];
+var filtered = [];
+var selectedSops = new Set();
+var selectedAssist = new Set();
+var selectedCats = new Set();
+var activeView = "card";
+
+function esc(s){ return String(s===undefined||s===null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escML(s){ return esc(s).replace(/\n/g,"<br>"); }
+function slug(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+
+/* ── Seed data ── */
+var SEED = [
+  {contactId:"CT-4471",category:"Field Agent",sop:"Restricted Access Locations",assistance:"Live Assistance",
+    summary:"Gate code not accepted at drop-off.",
+    question:"Gate code on the ticket isn't working and the recipient isn't answering calls — do I hold the parcel or attempt again tomorrow?",
+    resolution:"Hold it and log an attempted-delivery note with the gate issue flagged — don't reattempt same-day unless the recipient reaches out first. Ops will follow up on access codes that keep failing.",
+    daysAgo:1, sme:"Marcus T."},
+  {contactId:"CT-3390",category:"Customer",sop:"Proof of Delivery Review",assistance:"SOP Clarification",
+    summary:"Customer disputes delivery photo.",
+    question:"Customer says the POD photo doesn't show their door. Do I need to request a resend from the agent or escalate directly?",
+    resolution:"Request a resend from the agent first — most POD disputes resolve once a second angle is provided. Only escalate if the agent can't produce one within 24 hours.",
+    daysAgo:2, sme:"Priya R."},
+  {contactId:"CT-2205",category:"Field Agent",sop:"Address Correction",assistance:"Process Confirmation",
+    summary:"Geocode pin two blocks off.",
+    question:"Pin is dropping two blocks from the actual address on this route. Should I correct it myself or flag it for someone else?",
+    resolution:"You can nudge the pin yourself from the route screen — just confirm the street number against the label first. I've also flagged this address for a geocode review on our end.",
+    daysAgo:2, sme:"Marcus T."},
+  {contactId:"CT-1187",category:"Customer",sop:"Customer Feedback Handling",assistance:"SOP Clarification",
+    summary:"Low rating tied to a late window, not the agent.",
+    question:"Customer left a 2-star review but the note says it was about the delivery window, not the agent. Can this be reassigned off the agent's score?",
+    resolution:"Yes — flag it in the ratings tool with reason \"window mismatch, not agent conduct\" and it'll be excluded from that agent's score in the next cycle.",
+    daysAgo:3, sme:"Dana O."},
+  {contactId:"CT-5502",category:"Customer",sop:"Account Verification",assistance:"Escalation Support",
+    summary:"Repeated failed verification, customer frustrated.",
+    question:"Customer has failed ID verification three times through the normal flow and is asking for a supervisor. What's the escalation path here?",
+    resolution:"Escalate directly to the Verification team queue rather than retrying the same flow a fourth time — three failed attempts is the trigger point per policy. Let the customer know a specialist will reach out within one business day.",
+    daysAgo:4, sme:"Dana O."},
+  {contactId:"CT-6120",category:"Field Agent",sop:"Delivery Rerouting",assistance:"Live Assistance",
+    summary:"Customer requesting same-day reroute mid-route.",
+    question:"Customer is asking to reroute to a different address while I'm already out on the route. Can I do this live or does it need to go through support first?",
+    resolution:"You can action it live if the new address is within the same delivery zone — update it in the app and note the reason. Cross-zone reroutes still need to go through support to reassign the stop.",
+    daysAgo:5, sme:"Marcus T."},
+  {contactId:"CT-7788",category:"Field Agent",sop:"Package Refusal Handling",assistance:"Process Confirmation",
+    summary:"Recipient refused package, unclear next step.",
+    question:"Recipient refused the package outright and doesn't want it redelivered. What do I log this as, and where does the package go?",
+    resolution:"Log it as Refused — Return to Sender under the delivery outcome field, then bring it back to the depot at end of route. No further redelivery attempts are needed once refusal is logged.",
+    daysAgo:6, sme:"Priya R."},
+  {contactId:"CT-8034",category:"Customer",sop:"Delivery Investigation",assistance:"Escalation Support",
+    summary:"Package marked delivered, customer says never arrived.",
+    question:"Customer insists the package never arrived even though it's marked delivered with a photo. How far do I take this before escalating?",
+    resolution:"Check the photo against the address on file first — if it matches, you can close it as delivered-as-addressed and point the customer to their building's package policy. If the photo doesn't clearly match, open a delivery investigation ticket instead of closing it.",
+    daysAgo:7, sme:"Priya R."},
+  {contactId:"CT-9012",category:"Field Agent",sop:"Missed Instructions",assistance:"Training Gap",
+    summary:"New agent missed leave-at-door instructions twice.",
+    question:"This is the second time this agent has missed the leave-at-door instructions on file for a repeat customer. Is this a coaching note or an escalation?",
+    resolution:"First instance is a coaching note logged on the agent's file; this being the second makes it worth a short refresher with their lead before the next shift. No customer-facing escalation needed unless it happens again.",
+    daysAgo:8, sme:"Dana O."},
+  {contactId:"CT-9944",category:"Customer",sop:"General Process Clarification",assistance:"SOP Clarification",
+    summary:"Customer asking about holiday delivery cutoffs.",
+    question:"Customer wants to know the latest order-by date to guarantee delivery before the holiday. We don't have this written into any SOP yet — what do I tell them?",
+    resolution:"Use the standard 3-business-day buffer we quote for all standard shipping, since there's no seasonal SOP live yet. I've flagged this gap so a holiday-cutoff SOP gets written before next season.",
+    daysAgo:9, sme:"Dana O."},
+  {contactId:"CT-1050",category:"Field Agent",sop:"System/Tool Issue",assistance:"Escalation Support",
+    summary:"Route app crashed mid-delivery, lost stop order.",
+    question:"The route app crashed and reopened with stops out of order. Do I re-sequence manually or is there a way to pull the original order back?",
+    resolution:"Don't re-sequence manually — force-close and reopen the app once more first, which restores the server-side order in most cases. If it doesn't, call it in and dispatch can push the original sequence back to your device.",
+    daysAgo:10, sme:"Marcus T."},
+  {contactId:"CT-1279",category:"Customer",sop:"Proof of Delivery Review",assistance:"System/Tool Issue",
+    summary:"POD photo upload failed silently.",
+    question:"I took the delivery photo but the app shows the stop as complete with no photo attached. Is the photo lost, or does it just need time to sync?",
+    resolution:"Give it a few minutes on a stable connection — photos queue locally and sync once signal returns, so it's very rarely actually lost. If it's still missing after the shift ends, flag the stop ID and we'll check the upload queue on our end.",
+    daysAgo:11, sme:"Priya R."},
+  {contactId:"CT-1366",category:"Field Agent",sop:"Restricted Access Locations",assistance:"Process Confirmation",
+    summary:"Locked mailroom, no key on file.",
+    question:"Building mailroom is locked and there's no access key on file for this stop. Do I mark this as an attempted delivery or hold it for the next day?",
+    resolution:"Mark it as attempted with reason \"no building access\" and hold the parcel — don't reattempt until access instructions are added to the stop. I'll get an access-code request sent to the property.",
+    daysAgo:12, sme:"Marcus T."},
+  {contactId:"CT-1421",category:"Customer",sop:"Customer Feedback Handling",assistance:"Live Assistance",
+    summary:"Customer wants a rating removed entirely.",
+    question:"Customer is asking me directly, live, to have their 1-star rating deleted rather than just reassigned off the agent. Can that be done?",
+    resolution:"Ratings aren't deletable on request — only reassigned when the note doesn't reflect agent conduct, which this one does. Let the customer know it stays on file but won't affect the agent's score if the note supports that.",
+    daysAgo:13, sme:"Dana O."},
+  {contactId:"CT-1508",category:"Field Agent",sop:"Delivery Investigation",assistance:"Escalation Support",
+    summary:"Suspected theft after delivery, agent flagged it themselves.",
+    question:"I dropped this off exactly per instructions but the customer is now saying it was stolen within an hour. Should I file anything on my end?",
+    resolution:"Yes — file a delivery investigation note with your drop-off time and photo attached, even though the investigation itself sits with the customer-facing team. Your documentation is what protects the record if it's disputed later.",
+    daysAgo:14, sme:"Priya R."}
+];
+
+function build(){
+  var now=Date.now();
+  SEED.forEach(function(s,i){
+    var createdMs = now - (s.daysAgo*24*60*60000) - (6*60*60000);
+    var resolvedMs = createdMs + (35+ (i%4)*12)*60000;
+    items.push({
+      id:"LOOP-"+String(100+i).padStart(4,"0"),
+      contactId:s.contactId, category:s.category, sop:s.sop, assistance:s.assistance,
+      summary:s.summary, question:s.question, resolution:s.resolution,
+      claimedBy:s.sme, createdMs:createdMs, resolvedMs:resolvedMs,
+      messages:[
+        {name:"Teammate",role:"TEAMMATE",text:s.question,type:"QUESTION",ms:createdMs},
+        {name:"SYSTEM",role:"SYSTEM",text:"Claimed by "+s.sme+".",type:"SYSTEM",ms:createdMs+8*60000},
+        {name:s.sme,role:"SME",text:s.resolution,type:"RESOLUTION",ms:resolvedMs},
+        {name:"SYSTEM",role:"SYSTEM",text:"Ticket marked RESOLVED.",type:"SYSTEM",ms:resolvedMs+60000}
+      ]
+    });
+  });
+}
+
+/* ── Filter sidebar ── */
+function renderFilterControls(){
+  renderFilterGroup("sopFilters",SOPS,"sop",selectedSops);
+  renderFilterGroup("assistFilters",ASSISTANCE_TYPES,"assist",selectedAssist);
+  renderFilterGroup("catFilters",CATEGORIES,"cat",selectedCats);
+}
+function renderFilterGroup(rootId, opts, kind, set){
+  var root=document.getElementById(rootId);
+  root.innerHTML=opts.map(function(o){
+    var count=items.filter(function(it){
+      if(kind==="sop") return it.sop===o;
+      if(kind==="assist") return it.assistance===o;
+      return it.category===o;
+    }).length;
+    return '<button class="filter-option'+(set.has(o)?" active":"")+'" onclick="toggleFilter(&quot;'+kind+'&quot;,&quot;'+esc(o)+'&quot;)">'
+      +'<span class="filter-box">'+(set.has(o)?"✓":"")+'</span><span>'+esc(o)+'</span>'
+      +'<span class="filter-count" id="cnt-'+kind+'-'+slug(o)+'">'+count+'</span></button>';
+  }).join('');
+}
+function toggleFilter(kind,val){
+  var set = kind==="sop"?selectedSops : kind==="assist"?selectedAssist : selectedCats;
+  set.has(val) ? set.delete(val) : set.add(val);
+  renderFilterControls();
+  applyFilters();
+}
+function resetFilters(){
+  selectedSops.clear(); selectedAssist.clear(); selectedCats.clear();
+  document.getElementById("searchInput").value="";
+  document.getElementById("clearSearchBtn").style.display="none";
+  document.getElementById("sortSelect").value="newest";
+  renderFilterControls();
+  applyFilters();
+}
+function handleSearch(){
+  var v=document.getElementById("searchInput").value.trim();
+  document.getElementById("clearSearchBtn").style.display = v ? "block" : "none";
+  applyFilters();
+}
+function clearSearch(){
+  document.getElementById("searchInput").value="";
+  document.getElementById("clearSearchBtn").style.display="none";
+  applyFilters();
+}
+
+/* ── Filtering / sorting ── */
+function applyFilters(){
+  var q=document.getElementById("searchInput").value.trim().toLowerCase();
+  var sort=document.getElementById("sortSelect").value;
+  filtered = items.filter(function(it){
+    if(selectedSops.size && !selectedSops.has(it.sop)) return false;
+    if(selectedAssist.size && !selectedAssist.has(it.assistance)) return false;
+    if(selectedCats.size && !selectedCats.has(it.category)) return false;
+    if(!q) return true;
+    var hay=[it.id,it.sop,it.assistance,it.category,it.summary,it.question,it.resolution,it.claimedBy].join(" ").toLowerCase();
+    return hay.indexOf(q)!==-1;
+  });
+  filtered.sort(function(a,b){
+    if(sort==="title") return a.id.localeCompare(b.id);
+    return sort==="oldest" ? a.resolvedMs-b.resolvedMs : b.resolvedMs-a.resolvedMs;
+  });
+  updateToolbarCopy(q);
+  renderAll();
+}
+function updateToolbarCopy(q){
+  var parts=[];
+  if(selectedSops.size) parts.push(Array.from(selectedSops).join(", "));
+  if(selectedAssist.size) parts.push(Array.from(selectedAssist).join(", "));
+  if(selectedCats.size) parts.push(Array.from(selectedCats).join(", "));
+  document.getElementById("resultTitle").textContent = parts.length ? parts.join(" · ") : "All resolved tickets";
+  document.getElementById("resultSummary").textContent = filtered.length+" item"+(filtered.length===1?"":"s")+(q?' matching "'+q+'"':"");
+}
+
+/* ── View switching ── */
+function setView(v){
+  activeView=v;
+  document.querySelectorAll(".view-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.view===v); });
+  document.getElementById("cardView").style.display = v==="card" ? "" : "none";
+  document.getElementById("listView").style.display = v==="list" ? "" : "none";
+  document.getElementById("tableView").style.display = v==="table" ? "" : "none";
+  renderAll();
+}
+
+/* ── Rendering ── */
+function fmtDate(ms){ return new Date(ms).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDateTime(ms){ return new Date(ms).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}); }
+function truncate(s,n){ s=String(s||""); return s.length<=n ? s : s.slice(0,n).replace(/\s+\S*$/,"")+"…"; }
+
+function renderAll(){
+  var empty=document.getElementById("emptyState");
+  var hasItems=filtered.length>0;
+  empty.style.display = hasItems ? "none" : "";
+  document.getElementById("cardView").style.display = (hasItems && activeView==="card") ? "" : "none";
+  document.getElementById("listView").style.display = (hasItems && activeView==="list") ? "" : "none";
+  document.getElementById("tableView").style.display = (hasItems && activeView==="table") ? "" : "none";
+  if(!hasItems) return;
+  renderCardView(); renderListView(); renderTableView();
+}
+
+function tileHtml(it){ return '<div class="tile">'+esc(it.sop)+'</div>'; }
+
+function renderCardView(){
+  var featured=filtered[0];
+  var rest=filtered.slice(1);
+  document.getElementById("featuredWrap").innerHTML = featured ? (
+    '<div class="featured-card" onclick="openModal(&quot;'+featured.id+'&quot;)">'
+    +tileHtml(featured)
+    +'<div class="featured-content">'
+    +'<div class="card-meta"><span class="cat-chip">'+esc(featured.assistance)+'</span><span class="cat-chip">'+esc(featured.category)+'</span><span>'+fmtDate(featured.resolvedMs)+'</span></div>'
+    +'<h3>'+esc(featured.id)+' — '+esc(featured.summary)+'</h3>'
+    +'<div class="card-summary">'+esc(truncate(featured.question,160))+'</div>'
+    +'</div></div>'
+  ) : "";
+  document.getElementById("cardGrid").innerHTML = rest.map(function(it){
+    return '<div class="lib-card" onclick="openModal(&quot;'+it.id+'&quot;)">'
+      +tileHtml(it)
+      +'<div class="card-meta"><span class="cat-chip">'+esc(it.assistance)+'</span></div>'
+      +'<h4>'+esc(it.id)+' — '+esc(it.summary)+'</h4>'
+      +'<p>'+esc(truncate(it.question,110))+'</p>'
+      +'<div class="card-footer"><span>'+esc(it.claimedBy)+'</span><span>Open →</span></div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderListView(){
+  document.getElementById("listStack").innerHTML = filtered.map(function(it){
+    return '<div class="list-row" onclick="openModal(&quot;'+it.id+'&quot;)">'
+      +tileHtml(it)
+      +'<div><div class="card-meta"><span class="cat-chip">'+esc(it.assistance)+'</span><span>'+fmtDate(it.resolvedMs)+'</span></div>'
+      +'<h4>'+esc(it.id)+' — '+esc(it.summary)+'</h4>'
+      +'<p>'+esc(truncate(it.question,150))+'</p></div>'
+      +'<div class="list-arrow">→</div></div>';
+  }).join('');
+}
+
+function renderTableView(){
+  document.getElementById("tableBody").innerHTML = filtered.map(function(it){
+    return '<tr onclick="openModal(&quot;'+it.id+'&quot;)">'
+      +'<td>'+fmtDate(it.resolvedMs)+'</td>'
+      +'<td><strong>'+esc(it.id)+'</strong><br><span style="color:var(--muted);">'+esc(truncate(it.summary,70))+'</span></td>'
+      +'<td>'+esc(it.sop)+'</td>'
+      +'<td>'+esc(it.category)+'</td>'
+      +'<td>'+esc(it.claimedBy)+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+/* ── Detail modal ── */
+function fh(label,val){ return '<div><div class="field-name">'+esc(label)+'</div><div class="field-value">'+esc(val||"—")+'</div></div>'; }
+function typeLabel(t){ return {QUESTION:"Question",RESOLUTION:"Resolution",SYSTEM:"System"}[t]||t; }
+function activityHtml(m){
+  var cls="activity-type"+(m.type==="RESOLUTION"?" resolution":"");
+  return '<div class="activity-item"><div class="activity-head"><span class="activity-sender">'+esc(m.name)+'</span>'
+    +'<span class="activity-time">'+fmtDateTime(m.ms)+'</span>'
+    +'<span class="'+cls+'">'+esc(typeLabel(m.type))+'</span></div>'
+    +'<div class="activity-text">'+escML(m.text)+'</div></div>';
+}
+function openModal(id){
+  var it=items.find(function(i){ return i.id===id; });
+  if(!it) return;
+  document.getElementById("modalTitle").textContent=it.id;
+  document.getElementById("modalMeta").innerHTML =
+    '<span>'+esc(it.sop)+'</span><span>'+esc(it.category)+'</span><span>Resolved '+fmtDate(it.resolvedMs)+'</span>';
+  var html='<div class="detail-card"><div class="dc-label">Ticket Info</div><div class="field-grid">'
+    +fh("Contact ID",it.contactId)+fh("Category",it.category)
+    +fh("SOP Followed",it.sop)+fh("Assistance",it.assistance)
+    +fh("Claimed By",it.claimedBy)+fh("Submitted",fmtDateTime(it.createdMs))
+    +'</div><div class="field-block"><div class="field-name">Summary</div><div class="field-value">'+esc(it.summary)+'</div></div>'
+    +'<div class="field-block"><div class="field-name">Question</div><div class="field-value">'+esc(it.question)+'</div></div></div>';
+  html+='<div class="detail-card resolution-box"><div class="resolution-tag">Official Resolution</div><div class="field-value">'+escML(it.resolution)+'</div></div>';
+  html+='<div class="detail-card"><div class="dc-label">Activity</div>';
+  it.messages.forEach(function(m){ html+=activityHtml(m); });
+  html+='</div>';
+  document.getElementById("modalBody").innerHTML=html;
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal(){ document.getElementById("modalBackdrop").classList.remove("open"); }
+function closeModalFromBackdrop(e){ if(e.target.id==="modalBackdrop") closeModal(); }
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeModal(); });
+
+build();
+renderFilterControls();
+applyFilters();
+</script>
+</body>
+</html>
