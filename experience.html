@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experience — Mael, Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6;
+    --paper:#FBF9F3;
+    --ink:#1E1C18;
+    --red:#E24E32;
+    --red-dark:#C93F26;
+    --blue:#AFC8DE;
+    --line:#D8D3C4;
+    --muted:#5B564C;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;overflow-x:clip;width:100%;max-width:100vw;overscroll-behavior-x:none;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:clip;width:100%;max-width:100vw;position:relative;
+    overscroll-behavior-x:none;touch-action:pan-y;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400; overflow-wrap:break-word; word-break:break-word;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+
+  /* ===== Header (shared with services.html / index.html) ===== */
+  .ribbon{
+    background:var(--red);color:#fff;font-size:12px;letter-spacing:.02em;
+    padding:5px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:6px 14px;text-align:center;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+  }
+  .ribbon b{font-weight:700;}
+  .ribbon .pill{
+    background:var(--paper);color:var(--red-dark);padding:5px 16px;border-radius:var(--radius);
+    border:1px solid var(--ink);font-weight:600;font-size:12px;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .ribbon .pill:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .site-header{position:sticky;top:0;z-index:1000;}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;padding:22px 48px;
+    max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);
+  }
+  .logo{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--red);letter-spacing:-.01em;}
+  .logo span{color:var(--ink);}
+  .nav-links{display:flex;gap:20px;list-style:none;font-weight:800;font-size:18px;}
+  .nav-links li{position:relative;display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--ink);padding:8px 0;}
+  .nav-links li svg{opacity:.55;width:13px;height:13px;transition:transform .15s ease;}
+  .nav-links li.has-dropdown:hover svg,.nav-links li.has-dropdown.open svg{transform:rotate(180deg);opacity:.9;}
+  .nav-links li.has-dropdown:hover,.nav-links li.has-dropdown.open{color:var(--red);}
+  .nav-links li.current{color:var(--red);}
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 14px);left:0;background:var(--paper);border-radius:var(--radius);
+    border:1px solid var(--ink);box-shadow:var(--shadow-md);min-width:240px;padding:8px 24px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;z-index:1100;
+  }
+  .nav-links li.has-dropdown:hover .nav-dropdown,.nav-links li.has-dropdown.open .nav-dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);
+  }
+  .nav-dropdown a{display:block;padding:16px 0;font-size:17px;font-weight:600;color:var(--ink);border-top:1px solid var(--line);white-space:nowrap;}
+  .nav-dropdown a:first-child{border-top:none;}
+  .nav-dropdown a:hover{color:var(--red);}
+  .track-btn{
+    background:var(--red);color:#fff;padding:17px 26px;border-radius:var(--radius);border:1px solid var(--ink);
+    font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;
+    transition:background .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .track-btn:hover{background:var(--red-dark);transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;background:transparent;border:none;cursor:pointer;padding:0;flex-shrink:0;}
+  .hamburger span{display:block;width:26px;height:2px;background:var(--ink);border-radius:2px;transition:transform .25s ease, opacity .2s ease;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-menu{max-height:0;overflow:hidden;background:var(--cream);border-top:0px solid var(--line);transition:max-height .35s ease, border-top-width .35s ease;}
+  .mobile-menu.open{max-height:640px;}
+  .mobile-menu-inner{padding:2px 24px 12px;}
+  .mobile-menu-toggle{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;}
+  .mobile-menu-toggle svg{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .2s ease;}
+  .mobile-menu-item.open .mobile-menu-toggle svg{transform:rotate(180deg);opacity:.9;}
+  .mobile-menu-item.open .mobile-menu-toggle{color:var(--red);}
+  .mobile-submenu{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .mobile-menu-item.open .mobile-submenu{max-height:260px;}
+  .mobile-submenu a{display:block;padding:5px 0 5px 14px;font-size:12px;font-weight:600;color:var(--muted);}
+  .mobile-submenu a:hover{color:var(--red);}
+  .mobile-menu .track-btn{justify-content:center;margin-top:8px;padding:9px 22px;font-size:13px;width:100%;}
+  @media(max-width:900px){
+    nav{padding:10px 24px;position:relative;z-index:1000;background:var(--cream);}
+    .logo{font-size:24px;}
+    .hamburger{display:flex;width:32px;height:32px;gap:4px;}
+    .hamburger span{width:20px;}
+    .nav-links{display:none;}
+    .desktop-only{display:none;}
+    .ribbon{flex-direction:column;padding:7px 24px;gap:4px;font-size:10px;}
+    .ribbon .pill{padding:3px 12px;font-size:10px;}
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:var(--ink);font-weight:700;
+    font-size:17px;padding:20px 32px;border-radius:var(--radius);border:1px solid var(--ink);margin-top:32px;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-sm);}
+  .btn.solid{background:var(--red);color:#fff;}
+  .btn.solid:hover{background:var(--red-dark);}
+  .btn.dark{background:var(--ink);color:#fff;}
+  .btn.dark:hover{background:#000;}
+
+  /* ===== Hero ===== */
+  .xp-hero{max-width:900px;margin:0 auto;padding:64px 32px 40px;text-align:center;}
+  .xp-hero .pill-label{
+    display:inline-block;background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);
+  }
+  .xp-hero h1{font-size:64px;line-height:1.08;font-weight:400;letter-spacing:-.02em;margin-top:22px;}
+  .xp-hero h1 .accent{color:var(--red);font-weight:600;}
+  .xp-hero p{margin:26px auto 0;font-size:20px;line-height:1.55;color:var(--muted);max-width:620px;}
+  .xp-hero .hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+  @media(max-width:700px){
+    .xp-hero{padding:36px 24px 32px;}
+    .xp-hero h1{font-size:clamp(30px,9vw,40px);}
+    .xp-hero p{font-size:16px;}
+    .xp-hero .btn{margin-top:24px;padding:16px 24px;font-size:15px;}
+  }
+
+  /* ===== Company strip ===== */
+  .xp-companies{max-width:1100px;margin:0 auto;padding:8px 32px 64px;}
+  .xp-companies-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .xp-company-card{
+    background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:26px 22px;box-shadow:var(--shadow-sm);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .xp-company-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .xp-company-mark{
+    width:46px;height:46px;border-radius:var(--radius);background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:18px;
+    margin-bottom:16px;
+  }
+  .xp-company-card:nth-child(2) .xp-company-mark{background:var(--red);}
+  .xp-company-card h4{font-size:17px;font-weight:700;}
+  .xp-company-card .role-count{font-size:13px;color:var(--muted);margin-top:4px;}
+  .xp-company-card .years{
+    display:inline-block;margin-top:14px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--red-dark);border-top:1px solid var(--line);padding-top:12px;width:100%;
+  }
+  @media(max-width:700px){
+    .xp-companies{padding:0 24px 40px;}
+    .xp-companies-row{grid-template-columns:1fr;}
+  }
+
+  /* ===== Intro / narrative split (mirrors services intro tone) ===== */
+  .xp-intro{
+    background:var(--paper);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    padding:90px 48px;
+  }
+  .xp-intro-inner{
+    max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;
+  }
+  .xp-intro h2{font-size:42px;font-weight:400;line-height:1.15;letter-spacing:-.01em;}
+  .xp-intro-body p{font-size:17px;line-height:1.7;color:var(--muted);margin-top:20px;max-width:520px;}
+  .xp-intro-body p:first-child{margin-top:0;}
+  @media(max-width:900px){
+    .xp-intro{padding:56px 24px;}
+    .xp-intro-inner{grid-template-columns:1fr;gap:28px;}
+    .xp-intro h2{font-size:clamp(26px,7vw,32px);}
+  }
+
+  /* ===== Stats strip ===== */
+  .xp-stats{background:var(--ink);color:#fff;padding:70px 48px;}
+  .xp-stats-inner{
+    max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center;
+  }
+  .xp-stats-inner div{padding:0 12px;}
+  .xp-stats h3{font-family:'Fraunces',serif;font-size:46px;font-weight:400;color:var(--red);}
+  .xp-stats p{margin-top:8px;font-size:13px;letter-spacing:.03em;color:rgba(255,255,255,.75);}
+  @media(max-width:900px){
+    .xp-stats-inner{grid-template-columns:repeat(2,1fr);gap:32px;}
+  }
+  @media(max-width:700px){
+    .xp-stats{padding:44px 24px;}
+    .xp-stats h3{font-size:38px;}
+  }
+
+  /* ===== Timeline (order is real & chronological, so numbering + dates are justified) ===== */
+  .xp-timeline-wrap{max-width:1000px;margin:0 auto;padding:90px 48px;}
+  .xp-timeline-head{text-align:center;margin-bottom:56px;}
+  .xp-timeline-head .pill-label{
+    display:inline-block;background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);
+  }
+  .xp-timeline-head h2{font-size:40px;font-weight:400;margin-top:18px;}
+  .xp-timeline-head h2 b{font-weight:600;color:var(--red);}
+
+  .xp-timeline{position:relative;}
+  .xp-timeline::before{
+    content:'';position:absolute;left:29px;top:8px;bottom:8px;width:2px;background:var(--line);
+  }
+  .xp-role{position:relative;padding-left:78px;margin-bottom:56px;}
+  .xp-role:last-child{margin-bottom:0;}
+  .xp-role-dot{
+    position:absolute;left:0;top:0;width:60px;height:60px;border-radius:50%;
+    background:var(--red);border:1px solid var(--ink);box-shadow:var(--shadow-sm);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-weight:600;font-size:20px;
+  }
+  .xp-role.is-current .xp-role-dot{background:var(--ink);}
+  .xp-role-card{
+    background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:32px 34px;
+  }
+  .xp-role-head{
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 20px;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;
+  }
+  .xp-role-title{font-size:23px;font-weight:400;}
+  .xp-role-title b{font-weight:600;}
+  .xp-role-meta{font-size:13px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);}
+  .xp-role-dates{font-size:13px;font-weight:700;color:var(--red-dark);white-space:nowrap;}
+  .xp-current-badge{
+    display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 9px;border-radius:var(--radius);margin-left:8px;vertical-align:middle;
+  }
+  .xp-role-list{display:flex;flex-direction:column;gap:12px;}
+  .xp-role-item{display:flex;align-items:flex-start;gap:12px;}
+  .xp-role-item-icon{
+    width:22px;height:22px;border-radius:var(--radius);border:2px solid var(--red);background:var(--red);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;
+  }
+  .xp-role-item span{font-size:15.5px;line-height:1.55;color:var(--ink);}
+  .xp-role-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+  .xp-role-tags span{
+    font-size:12px;font-weight:600;background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);
+    padding:5px 12px;color:var(--muted);
+  }
+  @media(max-width:700px){
+    .xp-timeline-wrap{padding:56px 20px;}
+    .xp-timeline-head h2{font-size:clamp(26px,7vw,30px);}
+    .xp-timeline::before{left:23px;}
+    .xp-role{padding-left:60px;margin-bottom:40px;}
+    .xp-role-dot{width:46px;height:46px;font-size:15px;}
+    .xp-role-card{padding:24px 20px;}
+    .xp-role-title{font-size:19px;}
+    .xp-role-head{flex-direction:column;align-items:flex-start;gap:6px;}
+  }
+
+  /* ===== Foundation (education / technical background) ===== */
+  .xp-foundation{
+    background:var(--blue);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    padding:80px 48px;
+  }
+  .xp-foundation-inner{
+    max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1.4fr;gap:56px;align-items:start;
+  }
+  .xp-foundation h2{font-size:36px;font-weight:400;}
+  .xp-foundation h2 b{font-weight:600;}
+  .xp-foundation-inner > div:first-child p{margin-top:16px;font-size:16px;line-height:1.6;color:var(--ink);opacity:.75;max-width:340px;}
+  .xp-foundation-degree{
+    display:inline-block;margin-top:20px;background:var(--ink);color:#fff;font-size:13px;font-weight:700;
+    padding:8px 16px;border-radius:var(--radius);
+  }
+  .xp-foundation-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .xp-foundation-item{
+    background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);padding:16px 18px;
+    font-size:14.5px;font-weight:600;box-shadow:var(--shadow-sm);
+  }
+  @media(max-width:900px){
+    .xp-foundation{padding:56px 24px;}
+    .xp-foundation-inner{grid-template-columns:1fr;gap:28px;}
+  }
+  @media(max-width:520px){
+    .xp-foundation-grid{grid-template-columns:1fr;}
+  }
+
+  /* ===== Core competencies ===== */
+  .xp-skills{max-width:1280px;margin:0 auto;padding:90px 48px;}
+  .xp-skills-head{text-align:center;margin-bottom:52px;}
+  .xp-skills-head .pill-label{
+    display:inline-block;background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);
+  }
+  .xp-skills-head h2{font-size:40px;font-weight:400;margin-top:18px;}
+  .xp-skills-head h2 b{font-weight:600;color:var(--red);}
+  .xp-skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .xp-skill-card{
+    background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:28px 24px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .xp-skill-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .xp-skill-card .glyph{font-size:30px;margin-bottom:14px;}
+  .xp-skill-card h4{font-size:16px;font-weight:700;margin-bottom:14px;line-height:1.3;}
+  .xp-skill-card ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .xp-skill-card li{font-size:13.5px;line-height:1.4;color:var(--muted);padding-left:14px;position:relative;}
+  .xp-skill-card li::before{content:'—';position:absolute;left:0;color:var(--red);}
+  @media(max-width:1100px){ .xp-skills-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:700px){
+    .xp-skills{padding:56px 24px;}
+    .xp-skills-grid{grid-template-columns:1fr;}
+    .xp-skills-head h2{font-size:clamp(26px,7vw,30px);}
+  }
+
+  /* ===== CTA banner ===== */
+  .xp-cta{background:var(--red);color:#fff;padding:80px 48px;text-align:center;position:relative;overflow:hidden;}
+  .xp-cta::before{
+    content:'';position:absolute;inset:0;opacity:.15;pointer-events:none;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.5) 0 1px, transparent 1px 34px);
+  }
+  .xp-cta-inner{position:relative;max-width:720px;margin:0 auto;}
+  .xp-cta h2{font-size:38px;font-weight:400;line-height:1.3;}
+  .xp-cta p{margin-top:16px;font-size:17px;color:rgba(255,255,255,.9);}
+  .xp-cta .btn{background:var(--ink);color:#fff;}
+  @media(max-width:700px){
+    .xp-cta{padding:52px 24px;}
+    .xp-cta h2{font-size:clamp(24px,7vw,30px);}
+  }
+
+  /* ===== Footer (shared) ===== */
+  footer{background:var(--cream);padding:70px 48px 44px;border-top:1px solid var(--line);}
+  .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.3fr repeat(5,1fr);gap:32px;}
+  .footer-brand .logo{margin-bottom:18px;}
+  .footer-brand p{color:var(--muted);font-size:16px;margin-bottom:24px;}
+  .socials{display:flex;gap:14px;}
+  .socials a{width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .footer-col h4{font-size:17px;font-weight:700;margin-bottom:22px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:16px;}
+  .footer-col a{color:var(--ink);font-size:15px;}
+  .footer-col a:hover{color:var(--red);}
+  .footer-bottom{
+    max-width:1280px;margin:44px auto 0;padding-top:26px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  .footer-bottom .links{display:flex;gap:26px;flex-wrap:wrap;}
+  .footer-bottom a{color:var(--muted);}
+  .footer-bottom a:hover{color:var(--ink);}
+  @media(max-width:900px){
+    footer{padding:56px 24px 32px;}
+    .footer-inner{grid-template-columns:1fr 1fr;gap:28px 24px;max-width:100%;}
+    .footer-inner > *{min-width:0;}
+    .footer-brand .logo{font-size:26px;}
+    .footer-bottom{margin-top:28px;padding-top:18px;flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="site-header">
+  <div class="ribbon">
+    <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
+    <a class="pill" href="index.html#contact">Get In Touch</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">taskmael<span>.</span></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="services.html#automation">Workflow Automation</a>
+          <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+          <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+          <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+          <a href="services.html#client-communication">Client Communication</a>
+          <a href="services.html#admin-tasks">Administrative Tasks</a>
+        </div>
+      </li>
+      <li class="has-dropdown current">Experience <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#taskus-sme">SME · TaskUs</a>
+          <a href="#taskus-csr">CSR · TaskUs</a>
+          <a href="#alorica-csr">CSR · Alorica</a>
+          <a href="#foundation">Education &amp; Technical Background</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">About <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+    </ul>
+    <a class="track-btn desktop-only" href="index.html#contact">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      View Résumé
+    </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Services
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="services.html#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="services.html#automation">Workflow Automation</a>
+          <a href="services.html#reporting">Dashboards &amp; Reporting</a>
+          <a href="services.html#kpi-monitoring">KPI Monitoring</a>
+          <a href="services.html#qa-calibration">QA &amp; Calibration</a>
+          <a href="services.html#client-communication">Client Communication</a>
+          <a href="services.html#admin-tasks">Administrative Tasks</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item open">
+        <button class="mobile-menu-toggle" type="button">Experience
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#taskus-sme">SME · TaskUs</a>
+          <a href="#taskus-csr">CSR · TaskUs</a>
+          <a href="#alorica-csr">CSR · Alorica</a>
+          <a href="#foundation">Education &amp; Technical Background</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Projects
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">About
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Resources
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <a class="track-btn" href="index.html#contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        View Résumé
+      </a>
+    </div>
+  </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="xp-hero">
+    <span class="pill-label">Experience</span>
+    <h1>From the frontline to the <span class="accent">calibration room.</span></h1>
+    <p>Two years in high-volume BPO operations, moving from handling the interactions myself to coaching the people who handle them — and the quality systems that keep everyone aligned in between.</p>
+    <div class="hero-actions">
+      <a class="btn solid" href="index.html#contact">Let's Talk&nbsp;→</a>
+      <a class="btn dark" href="#">Download Résumé (PDF)</a>
+    </div>
+  </section>
+
+  <!-- ================= COMPANY STRIP ================= -->
+  <section class="xp-companies">
+    <div class="xp-companies-row">
+      <div class="xp-company-card">
+        <div class="xp-company-mark">TU</div>
+        <h4>TaskUs Philippines</h4>
+        <div class="role-count">Subject Matter Expert — Quezon City</div>
+        <div class="years">Nov 2024 — Present</div>
+      </div>
+      <div class="xp-company-card">
+        <div class="xp-company-mark">TU</div>
+        <h4>TaskUs Philippines</h4>
+        <div class="role-count">Customer Service Representative — Quezon City</div>
+        <div class="years">Apr 2024 — Nov 2024</div>
+      </div>
+      <div class="xp-company-card">
+        <div class="xp-company-mark">AL</div>
+        <h4>Alorica Philippines</h4>
+        <div class="role-count">Customer Service Representative — Quezon City</div>
+        <div class="years">Jun — Oct 2023</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTRO / NARRATIVE ================= -->
+  <section class="xp-intro">
+    <div class="xp-intro-inner">
+      <div>
+        <div class="svc-eyebrow" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <span style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--red);">01</span>
+          <span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);">How I got here</span>
+        </div>
+        <h2>Started on chat. <b>Stayed for the systems.</b></h2>
+      </div>
+      <div class="xp-intro-body">
+        <p>I started in BPO the same way most people do — on the floor, handling high-volume customer interactions through chat, and getting graded on it every day. That grading is what pulled me in: I wanted to know why some responses scored well and others didn't, and what made a team's numbers move.</p>
+        <p>That curiosity is what took me from Customer Service Representative to Subject Matter Expert. Today I split my time between two things: keeping quality scores high across a live campaign, and building the reports, SOPs, and calibration sessions that make those scores repeatable instead of lucky.</p>
+        <p>It's the same instinct that shows up in the automation and reporting work on the <a href="services.html" style="color:var(--red-dark);font-weight:600;">Services</a> page — I like operations that explain themselves.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STATS ================= -->
+  <section class="xp-stats">
+    <div class="xp-stats-inner">
+      <div>
+        <h3>99%</h3>
+        <p>AVERAGE INDIVIDUAL QUALITY SCORE</p>
+      </div>
+      <div>
+        <h3>95%+</h3>
+        <p>SUSTAINED TEAM QUALITY, CAMPAIGN-WIDE</p>
+      </div>
+      <div>
+        <h3>~20</h3>
+        <p>AGENTS COACHED IN REAL TIME</p>
+      </div>
+      <div>
+        <h3>10+</h3>
+        <p>ESCALATIONS RESOLVED DAILY</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TIMELINE ================= -->
+  <section class="xp-timeline-wrap">
+    <div class="xp-timeline-head">
+      <span class="pill-label">The Roles</span>
+      <h2>A track record, <b>in order.</b></h2>
+    </div>
+
+    <div class="xp-timeline">
+
+      <article class="xp-role is-current" id="taskus-sme">
+        <div class="xp-role-dot">03</div>
+        <div class="xp-role-card">
+          <div class="xp-role-head">
+            <div>
+              <div class="xp-role-title"><b>Subject Matter Expert</b> (S.M.E.)<span class="xp-current-badge">Current</span></div>
+              <div class="xp-role-meta">TaskUs Philippines · Quezon City</div>
+            </div>
+            <div class="xp-role-dates">November 2024 — Present</div>
+          </div>
+          <div class="xp-role-list">
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Drove and maintained 95%+ team quality performance for the campaign, from Q4 2024 through the present.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Led calibration sessions and standing meetings with Quality Analysts, Team Leaders, and campaign clients to keep scoring criteria aligned across reviewers.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Delivers real-time coaching across the whole campaign, supporting almost 20 agents and directly improving their performance metrics.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Owns the administrative backbone of the role: reporting, documentation, root-cause analysis (RCA), KPI monitoring, content development, and client-specific tasks.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Manages 10+ escalations daily with a high resolution success rate, and is recognized as a top SME for people management, leadership, and knowledge contribution.</span>
+            </div>
+          </div>
+          <div class="xp-role-tags">
+            <span>Quality Assurance</span><span>Calibration</span><span>Coaching</span><span>RCA</span><span>KPI Monitoring</span><span>SOP Development</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="xp-role" id="taskus-csr">
+        <div class="xp-role-dot">02</div>
+        <div class="xp-role-card">
+          <div class="xp-role-head">
+            <div>
+              <div class="xp-role-title">Customer Service <b>Representative</b></div>
+              <div class="xp-role-meta">TaskUs Philippines · Quezon City</div>
+            </div>
+            <div class="xp-role-dates">April 2024 — November 2024</div>
+          </div>
+          <div class="xp-role-list">
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Achieved an individual quality performance of 95%+, month over month.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Consistently met campaign KPIs across every reporting period.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Handled high-volume customer interactions through chat, in a fast-paced, multi-thread environment.</span>
+            </div>
+          </div>
+          <div class="xp-role-tags">
+            <span>Chat Support</span><span>KPI Performance</span><span>High-Volume Queues</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="xp-role" id="alorica-csr">
+        <div class="xp-role-dot">01</div>
+        <div class="xp-role-card">
+          <div class="xp-role-head">
+            <div>
+              <div class="xp-role-title">Customer Service <b>Representative</b></div>
+              <div class="xp-role-meta">Alorica Philippines · Quezon City</div>
+            </div>
+            <div class="xp-role-dates">Jun 13, 2023 — Oct 25, 2023</div>
+          </div>
+          <div class="xp-role-list">
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Delivered consistent KPI performance in a fast-paced and complex environment — this was the role that set the baseline for everything since.</span>
+            </div>
+            <div class="xp-role-item">
+              <div class="xp-role-item-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span>Managed customer concerns and calls with a focus on resolution efficiency and satisfaction.</span>
+            </div>
+          </div>
+          <div class="xp-role-tags">
+            <span>Voice Support</span><span>Resolution Efficiency</span><span>Customer Satisfaction</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ================= FOUNDATION ================= -->
+  <section class="xp-foundation" id="foundation">
+    <div class="xp-foundation-inner">
+      <div>
+        <h2>Where the <b>rigor</b> comes from</h2>
+        <p>My background isn't originally operations — it's engineering. That's where the habit of measuring things, documenting them, and trusting data over instinct actually started.</p>
+        <span class="xp-foundation-degree">B.S. in Computer Engineering</span>
+      </div>
+      <div class="xp-foundation-grid">
+        <div class="xp-foundation-item">Computer Troubleshooting &amp; Maintenance</div>
+        <div class="xp-foundation-item">Cyberphysical Systems Fundamentals</div>
+        <div class="xp-foundation-item">Advanced Machine Learning &amp; AI</div>
+        <div class="xp-foundation-item">Advanced Microcontroller Fundamentals</div>
+        <div class="xp-foundation-item">Sensor Systems &amp; Motion Tracking</div>
+        <div class="xp-foundation-item">Programming &amp; Database Concepts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CORE COMPETENCIES ================= -->
+  <section class="xp-skills">
+    <div class="xp-skills-head">
+      <span class="pill-label">Core Competencies</span>
+      <h2>What I actually <b>bring to the table.</b></h2>
+    </div>
+    <div class="xp-skills-grid">
+
+      <div class="xp-skill-card">
+        <div class="glyph">☑</div>
+        <h4>Operations &amp; Leadership</h4>
+        <ul>
+          <li>Team coaching &amp; development</li>
+          <li>Escalation &amp; conflict resolution</li>
+          <li>KPI monitoring &amp; performance improvement</li>
+          <li>Quality assurance &amp; calibration</li>
+          <li>SOP development &amp; process improvement</li>
+          <li>Documentation, reporting &amp; admin support</li>
+          <li>Client coordination &amp; stakeholder communication</li>
+        </ul>
+      </div>
+
+      <div class="xp-skill-card">
+        <div class="glyph">⚙</div>
+        <h4>Business Operations Tools &amp; Systems</h4>
+        <ul>
+          <li>Microsoft Office Suite &amp; Google Workspace</li>
+          <li>Looker Studio, Metabase, SQL &amp; database management</li>
+          <li>Trello, Asana, Notion, Slack, Teams</li>
+          <li>Documentation &amp; reporting systems</li>
+          <li>Brevo &amp; MailMeteor email tools</li>
+          <li>Canva, Adobe Photoshop &amp; Premiere Pro</li>
+        </ul>
+      </div>
+
+      <div class="xp-skill-card">
+        <div class="glyph">💬</div>
+        <h4>Media, Communication &amp; Event Ops</h4>
+        <ul>
+          <li>Public speaking &amp; professional communication</li>
+          <li>Hosting, broadcasting &amp; shoutcasting</li>
+          <li>Cross-functional team collaboration</li>
+          <li>Event planning &amp; program coordination</li>
+          <li>Live production (OBS Studio &amp; vMix)</li>
+          <li>Social media &amp; chat/email automation</li>
+        </ul>
+      </div>
+
+      <div class="xp-skill-card">
+        <div class="glyph">◔</div>
+        <h4>Technical &amp; Engineering Background</h4>
+        <ul>
+          <li>Computer troubleshooting &amp; maintenance</li>
+          <li>Cyberphysical systems fundamentals</li>
+          <li>Advanced machine learning &amp; AI</li>
+          <li>Microcontroller fundamentals</li>
+          <li>Sensor systems &amp; motion tracking</li>
+          <li>Programming &amp; database concepts</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="xp-cta" id="contact">
+    <div class="xp-cta-inner">
+      <h2>Want the full picture? Grab the résumé.</h2>
+      <p>Every metric on this page is backed by the same data I'd hand a client. Download the résumé or reach out directly to talk through fit.</p>
+      <a class="btn" href="index.html#contact">Get In Touch&nbsp;→</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">taskmael<span>.</span></div>
+        <p>Operations, quality, and automation — delivered with care.</p>
+        <div class="socials">
+          <a href="#">in</a>
+          <a href="#">✉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="services.html#process-mapping">Process Mapping</a></li>
+          <li><a href="services.html#automation">Automation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Work</h4>
+        <ul><li><a href="index.html#">Case Studies</a></li><li><a href="index.html#">Projects</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul><li><a href="index.html#">Background</a></li><li><a href="experience.html">Résumé</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul><li><a href="index.html#contact">Email</a></li><li><a href="index.html#">LinkedIn</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul><li><a href="index.html#">Blog</a></li><li><a href="index.html#">Résumé PDF</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mael. Portfolio site.</span>
+      <div class="links">
+        <a href="index.html#">Privacy Policy</a>
+        <a href="index.html#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav dropdowns — tap-to-toggle for touch devices
+    (function(){
+      const items = document.querySelectorAll('.nav-links li.has-dropdown');
+      items.forEach(item=>{
+        item.addEventListener('click', (e)=>{
+          if(window.matchMedia('(hover: hover)').matches) return;
+          e.stopPropagation();
+          const wasOpen = item.classList.contains('open');
+          items.forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      document.addEventListener('click', ()=>{ items.forEach(i=> i.classList.remove('open')); });
+    })();
+
+    // Mobile hamburger menu
+    (function(){
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+      btn.addEventListener('click', ()=>{
+        const isOpen = menu.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      menu.querySelectorAll('.mobile-menu-item').forEach(item=>{
+        const toggle = item.querySelector('.mobile-menu-toggle');
+        toggle.addEventListener('click', ()=>{
+          const wasOpen = item.classList.contains('open');
+          menu.querySelectorAll('.mobile-menu-item').forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      menu.querySelectorAll('.mobile-submenu a, .mobile-menu-inner > .track-btn').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', ()=>{
+        if(window.innerWidth > 900){
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    // If arriving with a hash, scroll the right section into view under the sticky header.
+    window.addEventListener('load', ()=>{
+      if(location.hash){
+        const el = document.querySelector(location.hash);
+        if(el) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      }
+    });
+  </script>
+</body>
+</html>
