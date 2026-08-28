@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Base — Mael | Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6; --paper:#FBF9F3; --ink:#1E1C18;
+    --red:#E24E32; --red-dark:#C93F26; --blue:#AFC8DE;
+    --line:#D8D3C4; --muted:#5B564C;
+    --green:#2F6B3A; --green-tint:#E4EEE4;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{overflow-x:clip;width:100%;}
+  body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:clip;}
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;letter-spacing:-.015em;font-weight:400;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;}
+
+  .sim-ribbon{background:var(--ink);color:var(--paper);font-size:12px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;flex-wrap:wrap;}
+  .sim-ribbon b{color:var(--red);}
+  .sim-ribbon a{text-decoration:underline;text-underline-offset:2px;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);}
+  .logo{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--red);}
+  .logo span{color:var(--ink);}
+  .back-link{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;}
+  .back-link:hover{color:var(--red);}
+
+  .kb-hero{background:var(--red);color:#fff;padding:52px 32px 60px;text-align:center;position:relative;overflow:hidden;}
+  .kb-hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px);pointer-events:none;}
+  .kb-hero-inner{position:relative;max-width:720px;margin:0 auto;}
+  .kb-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:16px;}
+  .kb-hero h1{font-size:clamp(28px,4.5vw,44px);line-height:1.12;}
+  .kb-hero p{margin:18px auto 0;font-size:16px;line-height:1.6;color:rgba(255,255,255,.88);max-width:540px;}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 24px 100px;}
+
+  /* ── Article picker ── */
+  #articleList .list-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red-dark);margin-bottom:6px;}
+  #articleList h2{font-size:24px;margin-bottom:24px;}
+  .article-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+  .article-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:20px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;}
+  .article-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .article-tag{display:inline-block;background:var(--blue);border:1px solid var(--ink);border-radius:var(--radius);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;margin-bottom:12px;align-self:flex-start;}
+  .article-card h3{font-size:18px;margin-bottom:8px;line-height:1.28;}
+  .article-card p{color:var(--muted);font-size:13px;line-height:1.55;flex:1;margin-bottom:14px;}
+  .article-meta-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;}
+  .article-open{color:var(--red-dark);font-weight:700;text-transform:uppercase;letter-spacing:.02em;}
+
+  /* ── Article / decision tree view ── */
+  #articleView{display:none;}
+  .article-header{margin-bottom:22px;}
+  .article-back{font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;}
+  .article-back:hover{color:var(--red-dark);}
+  .article-header h2{font-size:28px;line-height:1.15;margin-bottom:8px;}
+  .article-header .lede{color:var(--muted);font-size:14.5px;line-height:1.6;max-width:640px;}
+  .article-header-meta{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .meta-chip{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:4px 10px;}
+
+  /* Trail of answered steps */
+  .trail{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px;}
+  .trail-chip{display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px 5px 8px;font-size:11.5px;}
+  .trail-chip .num{background:var(--ink);color:var(--paper);width:16px;height:16px;border-radius:50%;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .trail-chip .ans{font-weight:700;color:var(--red-dark);}
+  .trail-restart{font-size:11.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer;align-self:center;margin-left:2px;}
+
+  /* Question node card */
+  .node-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:26px 28px;position:relative;}
+  .node-step-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;}
+  .node-question{font-family:'Fraunces',serif;font-size:22px;line-height:1.35;margin-bottom:22px;}
+  .node-options{display:flex;flex-wrap:wrap;gap:10px;}
+  .opt-btn{background:var(--cream);border:1px solid var(--ink);border-radius:var(--radius);padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s;display:flex;align-items:center;gap:8px;}
+  .opt-btn:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);background:var(--paper);}
+  .opt-btn.yes{background:var(--blue);}
+  .opt-btn.no{background:var(--cream);}
+  .opt-btn .arrow{opacity:.6;font-size:12px;}
+  .back-step-btn{margin-top:20px;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+  .back-step-btn:hover{color:var(--red-dark);}
+
+  /* Outcome node card */
+  .node-card.outcome{border-color:var(--green);}
+  .outcome-tag{display:inline-block;background:var(--green);color:#fff;font-size:10.5px;font-weight:700;padding:4px 12px;border-radius:var(--radius);text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px;}
+  .outcome-text{font-size:15.5px;line-height:1.65;background:var(--green-tint);border:1px solid var(--green);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px;}
+  .outcome-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--ink);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;transition:transform .12s,box-shadow .12s;background:var(--paper);}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .btn-red{background:var(--red);color:#fff;border-color:var(--red);}
+  .btn-ghost{background:var(--paper);}
+
+  @media(max-width:560px){
+    .node-card{padding:20px 18px;}
+    .node-question{font-size:19px;}
+    .opt-btn{flex:1;justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="sim-ribbon">
+    <b>SIMULATION</b> — a sample knowledge base built as a click-through decision tree, the way a support SOP should read. No real process detail. <a href="project.html">← Back to Projects</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+    <a class="back-link" href="project.html">← All Projects</a>
+  </nav>
+
+  <section class="kb-hero">
+    <div class="kb-hero-inner">
+      <span class="kb-eyebrow">Knowledge Base</span>
+      <h1>SOPs written as decisions, not paragraphs</h1>
+      <p>Three sample articles from a Loop Fulfillment support desk, each walked through step by step — answer the question in front of you, and the article narrows to exactly what applies.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <div id="articleList">
+      <div class="list-eyebrow">Sample Articles</div>
+      <h2>Pick a scenario to walk through</h2>
+      <div class="article-grid" id="articleGrid"></div>
+    </div>
+
+    <div id="articleView">
+      <div class="article-header">
+        <div class="article-back" onclick="backToList()">← All Articles</div>
+        <h2 id="artTitle"></h2>
+        <p class="lede" id="artLede"></p>
+        <div class="article-header-meta" id="artMeta"></div>
+      </div>
+      <div class="trail" id="trail"></div>
+      <div id="nodeWrap"></div>
+    </div>
+
+  </div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+ * KNOWLEDGE BASE — sample SOPs as click-through decision trees.
+ * Each article is a small tree: {question node → options → next node}
+ * ending in an outcome node. No backend, pure client-side state.
+ * ══════════════════════════════════════════════════════════ */
+
+var ARTICLES = [
+  {
+    id:"pod-dispute",
+    tag:"Customer Support",
+    title:"Proof of Delivery Dispute — Customer Says Package Wasn't Received",
+    lede:"Use this when a customer reports a package as missing but the delivery record shows it as completed.",
+    start:"q1",
+    nodes:{
+      q1:{ type:"question", label:"Step 1", text:"Does the delivery record show a POD photo attached to this stop?",
+        options:[ {label:"Yes",cls:"yes",next:"q2"}, {label:"No",cls:"no",next:"q3"} ] },
+      q2:{ type:"question", label:"Step 2", text:"Does the photo clearly show the correct address — a visible unit number, house number, or matching landmark?",
+        options:[ {label:"Yes, it matches",cls:"yes",next:"out_delivered"}, {label:"No, it's unclear or wrong",cls:"no",next:"out_reshoot"} ] },
+      q3:{ type:"question", label:"Step 2", text:"Was the stop logged as \"Left at Door\" or \"Handed to Recipient\"?",
+        options:[ {label:"Left at Door",cls:"yes",next:"out_investigate"}, {label:"Handed to Recipient",cls:"no",next:"q4"} ] },
+      q4:{ type:"question", label:"Step 3", text:"Does the recipient name on the stop match the account holder, or a name listed as an authorized contact?",
+        options:[ {label:"Yes, it matches",cls:"yes",next:"out_signature"}, {label:"No, it doesn't match",cls:"no",next:"out_verify"} ] },
+      out_delivered:{ type:"outcome", tag:"Resolution",
+        text:"Close the ticket as Delivered-as-Addressed. Reply to the customer with the POD photo and the standard building-policy note (packages can sometimes be moved by staff or other residents). No further escalation is needed." },
+      out_reshoot:{ type:"outcome", tag:"Resolution",
+        text:"Request a re-shoot or written confirmation from the agent for that specific stop. If nothing comes back within 24 hours, open a Delivery Investigation ticket instead of closing this one." },
+      out_investigate:{ type:"outcome", tag:"Resolution",
+        text:"Open a Delivery Investigation ticket. A \"Left at Door\" outcome with no photo on file always needs manual review before it can be closed either way." },
+      out_signature:{ type:"outcome", tag:"Resolution",
+        text:"Close the ticket as Delivered — Signature Method. The recipient name matching the account confirms the handoff; no further action is needed." },
+      out_verify:{ type:"outcome", tag:"Resolution",
+        text:"Escalate to Account Verification before closing. A name mismatch on a hand-delivered stop needs a second check to rule out a misdelivery." }
+    }
+  },
+  {
+    id:"restricted-access",
+    tag:"Field Agent Support",
+    title:"Restricted Access Location — Agent Can't Reach the Drop-off Point",
+    lede:"Use this when a field agent is on-site but can't physically get to the delivery point (locked gate, mailroom, buzzer system, etc.).",
+    start:"q1",
+    nodes:{
+      q1:{ type:"question", label:"Step 1", text:"Is there an access code or entry instruction already on file for this address?",
+        options:[ {label:"Yes",cls:"yes",next:"q2"}, {label:"No",cls:"no",next:"out_noinstructions"} ] },
+      q2:{ type:"question", label:"Step 2", text:"Did the code or instruction on file actually work when the agent tried it?",
+        options:[ {label:"Yes, it worked",cls:"yes",next:"out_recheck"}, {label:"No, it didn't work",cls:"no",next:"q3"} ] },
+      q3:{ type:"question", label:"Step 3", text:"Is the recipient reachable right now by phone or in-app message?",
+        options:[ {label:"Yes, reachable",cls:"yes",next:"out_contact"}, {label:"No response",cls:"no",next:"out_hold"} ] },
+      out_noinstructions:{ type:"outcome", tag:"Resolution",
+        text:"Log the stop as Attempted — No Access Instructions on File. The agent should continue their route; support will request access details from the customer before the next delivery attempt." },
+      out_recheck:{ type:"outcome", tag:"Resolution",
+        text:"This shouldn't need an escalation — have the agent re-enter the code carefully once more (a mistyped digit is the most common cause) before contacting support again." },
+      out_contact:{ type:"outcome", tag:"Resolution",
+        text:"Contact the recipient for an updated code or an alternate access point, and log that correspondence directly in the stop notes so the next agent can see it." },
+      out_hold:{ type:"outcome", tag:"Resolution",
+        text:"Mark the stop as Attempted — Access Blocked, hold the parcel at the depot, and flag the address for an access-code review before the next delivery attempt." }
+    }
+  },
+  {
+    id:"rating-dispute",
+    tag:"Quality & Feedback",
+    title:"Customer Rating Dispute — Low Score Tied to a Non-Agent Issue",
+    lede:"Use this when an agent's rating drops because of something in the review that wasn't actually within their control.",
+    start:"q1",
+    nodes:{
+      q1:{ type:"question", label:"Step 1", text:"Does the customer's review explicitly reference something outside the agent's control — a delivery window, weather delay, or address issue?",
+        options:[ {label:"Yes, it does",cls:"yes",next:"q2"}, {label:"No, it's about the agent",cls:"no",next:"out_stands"} ] },
+      q2:{ type:"question", label:"Step 2", text:"Is this the agent's first flagged rating this cycle for a non-conduct issue?",
+        options:[ {label:"Yes, first this cycle",cls:"yes",next:"out_exclude"}, {label:"No, they've had another",cls:"no",next:"out_manual"} ] },
+      out_stands:{ type:"outcome", tag:"Resolution",
+        text:"The rating stands as submitted — no reassignment applies here. You can still log a coaching note if the review raises a legitimate, agent-specific service concern worth following up on." },
+      out_exclude:{ type:"outcome", tag:"Resolution",
+        text:"Flag the rating in the ratings tool with a reason matching the review (e.g. \"window mismatch, not agent conduct\"), and it will be excluded from the agent's score for this cycle." },
+      out_manual:{ type:"outcome", tag:"Resolution",
+        text:"Escalate to Customer Feedback Handling for a manual review instead of excluding it yourself — a second flagged rating in the same cycle needs a second set of eyes before anything is excluded." }
+    }
+  }
+];
+
+var currentArticle = null;
+var currentNodeId = null;
+var pathStack = []; /* [{nodeId, answerLabel}] */
+
+function esc(s){ return String(s===undefined||s===null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* ── Article picker ── */
+function renderArticleList(){
+  var grid=document.getElementById("articleGrid");
+  grid.innerHTML = ARTICLES.map(function(a){
+    var stepCount = Object.keys(a.nodes).filter(function(k){ return a.nodes[k].type==="question"; }).length;
+    return '<div class="article-card" onclick="openArticle(&quot;'+a.id+'&quot;)">'
+      +'<span class="article-tag">'+esc(a.tag)+'</span>'
+      +'<h3>'+esc(a.title)+'</h3>'
+      +'<p>'+esc(a.lede)+'</p>'
+      +'<div class="article-meta-row"><span>'+stepCount+' decision point'+(stepCount===1?'':'s')+'</span><span class="article-open">Start →</span></div>'
+      +'</div>';
+  }).join('');
+}
+
+function openArticle(id){
+  currentArticle = ARTICLES.find(function(a){ return a.id===id; });
+  if(!currentArticle) return;
+  pathStack = [];
+  currentNodeId = currentArticle.start;
+  document.getElementById("articleList").style.display="none";
+  document.getElementById("articleView").style.display="block";
+  document.getElementById("artTitle").textContent = currentArticle.title;
+  document.getElementById("artLede").textContent = currentArticle.lede;
+  document.getElementById("artMeta").innerHTML = '<span class="meta-chip">'+esc(currentArticle.tag)+'</span><span class="meta-chip">Decision Tree</span>';
+  window.scrollTo({top:0,behavior:"smooth"});
+  renderNode();
+}
+function backToList(){
+  document.getElementById("articleList").style.display="block";
+  document.getElementById("articleView").style.display="none";
+  currentArticle = null;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ── Decision tree navigation ── */
+function choose(optionLabel, nextId){
+  pathStack.push({ nodeId: currentNodeId, answerLabel: optionLabel });
+  currentNodeId = nextId;
+  renderNode();
+}
+function stepBack(){
+  if(!pathStack.length) return;
+  var prev = pathStack.pop();
+  currentNodeId = prev.nodeId;
+  renderNode();
+}
+function restart(){
+  pathStack = [];
+  currentNodeId = currentArticle.start;
+  renderNode();
+}
+
+function renderTrail(){
+  var trailEl=document.getElementById("trail");
+  if(!pathStack.length){ trailEl.innerHTML=""; return; }
+  var html = pathStack.map(function(step,i){
+    return '<div class="trail-chip"><span class="num">'+(i+1)+'</span>Answered: <span class="ans">'+esc(step.answerLabel)+'</span></div>';
+  }).join('');
+  html += '<span class="trail-restart" onclick="restart()">↺ Start over</span>';
+  trailEl.innerHTML = html;
+}
+
+function renderNode(){
+  renderTrail();
+  var node = currentArticle.nodes[currentNodeId];
+  var wrap = document.getElementById("nodeWrap");
+
+  if(node.type==="question"){
+    wrap.innerHTML = ''
+      +'<div class="node-card">'
+        +'<div class="node-step-label">'+esc(node.label)+'</div>'
+        +'<div class="node-question">'+esc(node.text)+'</div>'
+        +'<div class="node-options">'
+          + node.options.map(function(o){
+              return '<button class="opt-btn '+esc(o.cls||"")+'" onclick="choose(&quot;'+esc(o.label)+'&quot;,&quot;'+o.next+'&quot;)">'+esc(o.label)+' <span class="arrow">→</span></button>';
+            }).join('')
+        +'</div>'
+        + (pathStack.length ? '<button class="back-step-btn" onclick="stepBack()">← Back one step</button>' : '')
+      +'</div>';
+  } else {
+    wrap.innerHTML = ''
+      +'<div class="node-card outcome">'
+        +'<span class="outcome-tag">'+esc(node.tag||"Resolution")+'</span>'
+        +'<div class="outcome-text">'+esc(node.text)+'</div>'
+        +'<div class="outcome-actions">'
+          +'<button class="btn" onclick="stepBack()">← Back one step</button>'
+          +'<button class="btn btn-red" onclick="restart()">Start Over</button>'
+          +'<button class="btn btn-ghost" onclick="backToList()">Choose Another Article</button>'
+        +'</div>'
+      +'</div>';
+  }
+}
+
+renderArticleList();
+</script>
+</body>
+</html>
