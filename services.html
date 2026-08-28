@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Mael, Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6;
+    --paper:#FBF9F3;
+    --ink:#1E1C18;
+    --red:#E24E32;
+    --red-dark:#C93F26;
+    --blue:#AFC8DE;
+    --line:#D8D3C4;
+    --muted:#5B564C;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;overflow-x:clip;width:100%;max-width:100vw;overscroll-behavior-x:none;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:clip;width:100%;max-width:100vw;position:relative;
+    overscroll-behavior-x:none;touch-action:pan-y;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif; letter-spacing:-.015em; font-weight:400; overflow-wrap:break-word; word-break:break-word;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+
+  /* ===== Header (shared with index.html) ===== */
+  .ribbon{
+    background:var(--red);color:#fff;font-size:12px;letter-spacing:.02em;
+    padding:5px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:6px 14px;text-align:center;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+  }
+  .ribbon b{font-weight:700;}
+  .ribbon .pill{
+    background:var(--paper);color:var(--red-dark);padding:5px 16px;border-radius:var(--radius);
+    border:1px solid var(--ink);font-weight:600;font-size:12px;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .ribbon .pill:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .site-header{position:sticky;top:0;z-index:1000;}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;padding:22px 48px;
+    max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);
+  }
+  .logo{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--red);letter-spacing:-.01em;}
+  .logo span{color:var(--ink);}
+  .nav-links{display:flex;gap:20px;list-style:none;font-weight:800;font-size:18px;}
+  .nav-links li{position:relative;display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--ink);padding:8px 0;}
+  .nav-links li svg{opacity:.55;width:13px;height:13px;transition:transform .15s ease;}
+  .nav-links li.has-dropdown:hover svg,.nav-links li.has-dropdown.open svg{transform:rotate(180deg);opacity:.9;}
+  .nav-links li.has-dropdown:hover,.nav-links li.has-dropdown.open{color:var(--red);}
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 14px);left:0;background:var(--paper);border-radius:var(--radius);
+    border:1px solid var(--ink);box-shadow:var(--shadow-md);min-width:240px;padding:8px 24px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;z-index:1100;
+  }
+  .nav-links li.has-dropdown:hover .nav-dropdown,.nav-links li.has-dropdown.open .nav-dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);
+  }
+  .nav-dropdown a{display:block;padding:16px 0;font-size:17px;font-weight:600;color:var(--ink);border-top:1px solid var(--line);white-space:nowrap;}
+  .nav-dropdown a:first-child{border-top:none;}
+  .nav-dropdown a:hover{color:var(--red);}
+  .track-btn{
+    background:var(--red);color:#fff;padding:17px 26px;border-radius:var(--radius);border:1px solid var(--ink);
+    font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;
+    transition:background .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .track-btn:hover{background:var(--red-dark);transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;background:transparent;border:none;cursor:pointer;padding:0;flex-shrink:0;}
+  .hamburger span{display:block;width:26px;height:2px;background:var(--ink);border-radius:2px;transition:transform .25s ease, opacity .2s ease;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-menu{max-height:0;overflow:hidden;background:var(--cream);border-top:0px solid var(--line);transition:max-height .35s ease, border-top-width .35s ease;}
+  .mobile-menu.open{max-height:640px;}
+  .mobile-menu-inner{padding:2px 24px 12px;}
+  .mobile-menu-toggle{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;}
+  .mobile-menu-toggle svg{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .2s ease;}
+  .mobile-menu-item.open .mobile-menu-toggle svg{transform:rotate(180deg);opacity:.9;}
+  .mobile-menu-item.open .mobile-menu-toggle{color:var(--red);}
+  .mobile-submenu{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .mobile-menu-item.open .mobile-submenu{max-height:260px;}
+  .mobile-submenu a{display:block;padding:5px 0 5px 14px;font-size:12px;font-weight:600;color:var(--muted);}
+  .mobile-submenu a:hover{color:var(--red);}
+  .mobile-menu .track-btn{justify-content:center;margin-top:8px;padding:9px 22px;font-size:13px;width:100%;}
+  @media(max-width:900px){
+    nav{padding:10px 24px;position:relative;z-index:1000;background:var(--cream);}
+    .logo{font-size:24px;}
+    .hamburger{display:flex;width:32px;height:32px;gap:4px;}
+    .hamburger span{width:20px;}
+    .nav-links{display:none;}
+    .desktop-only{display:none;}
+    .ribbon{flex-direction:column;padding:7px 24px;gap:4px;font-size:10px;}
+    .ribbon .pill{padding:3px 12px;font-size:10px;}
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:var(--ink);font-weight:700;
+    font-size:17px;padding:20px 32px;border-radius:var(--radius);border:1px solid var(--ink);margin-top:32px;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-sm);}
+  .btn.solid{background:var(--red);color:#fff;}
+  .btn.solid:hover{background:var(--red-dark);}
+  .btn.dark{background:var(--ink);color:#fff;}
+
+  /* ===== Hero ===== */
+  .svc-hero{max-width:900px;margin:0 auto;padding:64px 32px 56px;text-align:center;}
+  .svc-hero .pill-label{
+    display:inline-block;background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);
+    padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red-dark);
+  }
+  .svc-hero h1{font-size:64px;line-height:1.08;font-weight:400;letter-spacing:-.02em;margin-top:22px;}
+  .svc-hero h1 .accent{color:var(--red);font-weight:600;}
+  .svc-hero p{margin:26px auto 0;font-size:20px;line-height:1.55;color:var(--muted);max-width:600px;}
+  @media(max-width:700px){
+    .svc-hero{padding:36px 24px 40px;}
+    .svc-hero h1{font-size:clamp(30px,9vw,40px);}
+    .svc-hero p{font-size:16px;}
+  }
+
+  /* Jump nav — chips linking to each skill anchor */
+  .svc-jump{max-width:1100px;margin:0 auto;padding:0 32px 60px;}
+  .svc-jump-row{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+  }
+  .svc-jump-row a{
+    display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--ink);
+    border-radius:var(--radius);padding:10px 18px;font-weight:700;font-size:14px;box-shadow:var(--shadow-sm);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .svc-jump-row a:hover{transform:translate(-2px,-2px);background:#ECECE5;}
+  .svc-jump-row a .num{color:var(--red-dark);}
+  /* chip row retired — the accordion below now covers both desktop (horizontal) and mobile (vertical) */
+  .svc-jump{display:none;}
+  @media(max-width:700px){
+    .svc-jump{padding:0 24px 40px;}
+    .svc-jump-row{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;margin:0 -24px;padding:2px 24px;scrollbar-width:none;}
+    .svc-jump-row::-webkit-scrollbar{display:none;}
+    .svc-jump-row a{flex:0 0 auto;white-space:nowrap;}
+  }
+
+  /* ===== Hover-to-expand service accordion (desktop) ===== */
+  .svc-suite{display:block;}
+  .svc-suite{max-width:1280px;margin:0 auto;padding:0 24px 80px;}
+  .svc-suite-eyebrow-label{
+    font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    display:flex;justify-content:space-between;margin-bottom:16px;
+  }
+  .svc-suite-row{
+    display:flex;gap:8px;height:416px;
+  }
+  .svc-suite-panel{
+    position:relative;
+    display:block;
+    flex-grow:1;flex-shrink:1;flex-basis:0;min-width:70px;
+    overflow:hidden;
+    border-radius:var(--radius);
+    border:1px solid var(--ink);
+    box-shadow:var(--shadow-sm);
+    color:#fff;
+    transition:flex-grow .55s cubic-bezier(.22,1,.36,1);
+  }
+  .svc-suite-panel::before{
+    content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.08) 0 2px, transparent 2px 40px);
+  }
+  .svc-suite-panel::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:55%;pointer-events:none;
+    background:linear-gradient(to top, rgba(0,0,0,.32), rgba(0,0,0,0));
+  }
+  .svc-suite-panel:nth-child(1){background:var(--red);}
+  .svc-suite-panel:nth-child(2){background:#D8472E;}
+  .svc-suite-panel:nth-child(3){background:var(--red-dark);}
+  .svc-suite-panel:nth-child(4){background:#B23A22;}
+  .svc-suite-panel:nth-child(5){background:#8F2F1B;}
+  .svc-suite-panel:nth-child(6){background:#6E2515;}
+
+  /* default resting state: panel 1 open, rest collapsed */
+  .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1){flex-grow:4;}
+  /* hovering the row: whichever panel is under the cursor takes over */
+  .svc-suite-row:hover .svc-suite-panel:hover,
+  .svc-suite-panel:focus-visible{
+    flex-grow:4;
+    outline:none;
+  }
+  .svc-suite-panel:focus-visible{outline:2px solid #fff; outline-offset:-6px;}
+
+  .svc-suite-arrow{
+    position:absolute;top:14px;right:14px;z-index:2;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.5);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .4s ease, background .2s ease;
+  }
+  .svc-suite-panel:hover .svc-suite-arrow,
+  .svc-suite-panel:focus-visible .svc-suite-arrow{background:rgba(255,255,255,.28);}
+  .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-arrow{transform:rotate(135deg);}
+  .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-arrow{transform:rotate(135deg);}
+
+  .svc-suite-graphic{
+    position:absolute;top:22px;left:24px;font-size:44px;opacity:0;
+    transition:opacity .35s ease .05s;
+  }
+  .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-graphic{opacity:.85;}
+  .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-graphic{opacity:.85;}
+
+  .svc-suite-body{
+    position:absolute;left:22px;right:22px;top:50%;z-index:2;
+    transform:translateY(-50%);
+  }
+  .svc-suite-body-eyebrow{
+    display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:rgba(255,255,255,.75);margin-bottom:8px;white-space:normal;
+  }
+  .svc-suite-body-title{
+    display:block;font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.2;
+    white-space:normal;
+  }
+  .svc-suite-body-title b{font-weight:600;}
+  .svc-suite-body-desc{
+    display:block;margin-top:12px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.9);
+    max-width:270px;opacity:0;max-height:0;overflow:hidden;
+    transition:opacity .3s ease, max-height .3s ease;
+  }
+  .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-body-desc{opacity:1;max-height:120px;}
+  .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-body-desc{opacity:1;max-height:120px;}
+
+  .svc-suite-tag{
+    position:absolute;left:0;right:0;bottom:0;z-index:2;
+    padding:11px 22px;font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1.35;
+    background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.25);
+    white-space:normal;
+  }
+
+  /* ===== Vertical accordion — mobile (same mechanic, flex-grow now drives height) ===== */
+  @media(max-width:900px){
+    .svc-suite{padding:0 24px 56px;}
+    .svc-suite-eyebrow-label{margin-bottom:12px;}
+
+    .svc-suite-row{
+      flex-direction:column;
+      height:520px;
+      gap:8px;
+    }
+    .svc-suite-panel{
+      min-width:auto;
+      min-height:0;
+      transition:flex-grow .55s cubic-bezier(.22,1,.36,1);
+    }
+
+    /* arrow points down by default, flips to "open" diagonal when expanded */
+    .svc-suite-arrow{transform:rotate(90deg);}
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-arrow{transform:rotate(225deg);}
+    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-arrow{transform:rotate(225deg);}
+
+    .svc-suite-graphic{top:16px;left:18px;font-size:32px;}
+
+    .svc-suite-body{left:18px;right:18px;}
+    .svc-suite-body-title{font-size:18px;}
+    .svc-suite-body-desc{max-width:100%;}
+
+    .svc-suite-tag{padding:9px 18px;font-size:10px;}
+  }
+
+  /* ===== Skill blocks ===== */
+  .svc-block{
+    scroll-margin-top:150px;
+    max-width:1280px;margin:0 auto;padding:90px 48px;
+    display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+  }
+  .svc-block.reverse{direction:rtl;}
+  .svc-block.reverse > *{direction:ltr;}
+  .svc-block:nth-of-type(even){background:var(--paper);}
+  .svc-block-wrap{border-top:2px solid var(--ink);}
+  .svc-block-wrap:last-of-type{border-bottom:2px solid var(--ink);}
+
+  .svc-eyebrow{
+    display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  }
+  .svc-eyebrow .num{
+    font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--red);
+  }
+  .svc-eyebrow .label{
+    font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  }
+  .svc-block h2{font-size:42px;font-weight:400;line-height:1.15;letter-spacing:-.01em;}
+  .svc-block h2 b{font-weight:600;color:var(--red);}
+  .svc-block p.desc{margin-top:20px;font-size:17px;line-height:1.65;color:var(--muted);max-width:480px;}
+  .svc-feature-list{margin-top:28px;display:flex;flex-direction:column;gap:16px;}
+  .svc-feature{display:flex;align-items:flex-start;gap:14px;}
+  .svc-feature-icon{
+    width:26px;height:26px;border-radius:var(--radius);border:2px solid var(--red);background:var(--red);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;
+  }
+  .svc-feature span{font-size:16px;font-weight:600;line-height:1.4;}
+
+  .svc-media{
+    border-radius:var(--radius);overflow:hidden;aspect-ratio:1/0.9;background:var(--cream);
+    border:1px solid var(--ink);box-shadow:var(--shadow-md);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .svc-block:nth-of-type(even) .svc-media{background:var(--paper);}
+  .svc-media .glyph{font-size:110px;opacity:.16;}
+  .svc-media-badge{
+    position:absolute;top:20px;left:20px;background:var(--red);color:#fff;font-weight:700;font-size:13px;
+    padding:8px 14px;border-radius:var(--radius);border:1px solid var(--ink);box-shadow:var(--shadow-sm);
+  }
+
+  @media(max-width:900px){
+    .svc-block{grid-template-columns:1fr;gap:36px;padding:56px 24px;}
+    .svc-block.reverse{direction:ltr;}
+    .svc-block .svc-media{order:-1;}
+    .svc-block h2{font-size:clamp(26px,7vw,32px);}
+  }
+
+  /* ===== Stats strip ===== */
+  .svc-stats{
+    background:var(--ink);color:#fff;padding:70px 48px;
+  }
+  .svc-stats-inner{
+    max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center;
+  }
+  .svc-stats-inner div{padding:0 12px;}
+  .svc-stats h3{font-family:'Fraunces',serif;font-size:52px;font-weight:400;color:var(--red);}
+  .svc-stats p{margin-top:8px;font-size:14px;letter-spacing:.03em;color:rgba(255,255,255,.75);}
+  @media(max-width:700px){
+    .svc-stats{padding:44px 24px;}
+    .svc-stats-inner{grid-template-columns:1fr;gap:32px;}
+    .svc-stats h3{font-size:40px;}
+  }
+
+  /* ===== CTA banner ===== */
+  .svc-cta{background:var(--red);color:#fff;padding:80px 48px;text-align:center;position:relative;overflow:hidden;}
+  .svc-cta::before{
+    content:'';position:absolute;inset:0;opacity:.15;pointer-events:none;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.5) 0 1px, transparent 1px 34px);
+  }
+  .svc-cta-inner{position:relative;max-width:720px;margin:0 auto;}
+  .svc-cta h2{font-size:38px;font-weight:400;line-height:1.3;}
+  .svc-cta p{margin-top:16px;font-size:17px;color:rgba(255,255,255,.9);}
+  .svc-cta .btn{background:var(--ink);color:#fff;}
+  @media(max-width:700px){
+    .svc-cta{padding:52px 24px;}
+    .svc-cta h2{font-size:clamp(24px,7vw,30px);}
+  }
+
+  /* ===== Footer (shared) ===== */
+  footer{background:var(--cream);padding:70px 48px 44px;border-top:1px solid var(--line);}
+  .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.3fr repeat(5,1fr);gap:32px;}
+  .footer-brand .logo{margin-bottom:18px;}
+  .footer-brand p{color:var(--muted);font-size:16px;margin-bottom:24px;}
+  .socials{display:flex;gap:14px;}
+  .socials a{width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .footer-col h4{font-size:17px;font-weight:700;margin-bottom:22px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:16px;}
+  .footer-col a{color:var(--ink);font-size:15px;}
+  .footer-col a:hover{color:var(--red);}
+  .footer-bottom{
+    max-width:1280px;margin:44px auto 0;padding-top:26px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  .footer-bottom .links{display:flex;gap:26px;flex-wrap:wrap;}
+  .footer-bottom a{color:var(--muted);}
+  .footer-bottom a:hover{color:var(--ink);}
+  @media(max-width:900px){
+    footer{padding:56px 24px 32px;}
+    .footer-inner{grid-template-columns:1fr 1fr;gap:28px 24px;max-width:100%;}
+    .footer-inner > *{min-width:0;}
+    .footer-brand .logo{font-size:26px;}
+    .footer-bottom{margin-top:28px;padding-top:18px;flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="site-header">
+  <div class="ribbon">
+    <b>AVAILABLE FOR NEW ROLES</b>&nbsp;|&nbsp;Open to remote Ops &amp; Automation VA work
+    <a class="pill" href="index.html#contact">Get In Touch</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">Services <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="#automation">Workflow Automation</a>
+          <a href="#reporting">Dashboards &amp; Reporting</a>
+          <a href="#kpi-monitoring">KPI Monitoring</a>
+          <a href="#qa-calibration">QA &amp; Calibration</a>
+          <a href="#client-communication">Client Communication</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Experience <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Projects <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">About <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+      <li class="has-dropdown">Resources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="nav-dropdown">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </li>
+    </ul>
+    <a class="track-btn desktop-only" href="index.html#contact">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      View Résumé
+    </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <div class="mobile-menu-item open">
+        <button class="mobile-menu-toggle" type="button">Services
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="#process-mapping">Process Mapping &amp; SOPs</a>
+          <a href="#automation">Workflow Automation</a>
+          <a href="#reporting">Dashboards &amp; Reporting</a>
+          <a href="#kpi-monitoring">KPI Monitoring</a>
+          <a href="#qa-calibration">QA &amp; Calibration</a>
+          <a href="#client-communication">Client Communication</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Experience
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Projects
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">About
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <div class="mobile-menu-item">
+        <button class="mobile-menu-toggle" type="button">Resources
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-submenu">
+          <a href="index.html#">Placeholder item 1</a>
+          <a href="index.html#">Placeholder item 2</a>
+        </div>
+      </div>
+      <a class="track-btn" href="index.html#contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V6l-8-4z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        View Résumé
+      </a>
+    </div>
+  </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="svc-hero">
+    <span class="pill-label">Services</span>
+    <h1>Six ways I keep your <span class="accent">operations</span> running.</h1>
+    <p>From the first messy workflow to a client-ready report, here's exactly what I handle — and how each piece fits into the way your team already works.</p>
+  </section>
+
+  <!-- Jump chips — mobile fallback -->
+  <nav class="svc-jump" aria-label="Jump to a service">
+    <div class="svc-jump-row">
+      <a href="#process-mapping"><span class="num">01</span> Process Mapping &amp; SOPs</a>
+      <a href="#automation"><span class="num">02</span> Workflow Automation</a>
+      <a href="#reporting"><span class="num">03</span> Dashboards &amp; Reporting</a>
+      <a href="#kpi-monitoring"><span class="num">04</span> KPI Monitoring</a>
+      <a href="#qa-calibration"><span class="num">05</span> QA &amp; Calibration</a>
+      <a href="#client-communication"><span class="num">06</span> Client Communication</a>
+    </div>
+  </nav>
+
+  <!-- Jump accordion — desktop. Hover a bar to preview it, click to jump. -->
+  <nav class="svc-suite" aria-label="Jump to a service">
+    <div class="svc-suite-eyebrow-label">
+      <span>Hover to preview</span>
+      <span>Click to jump →</span>
+    </div>
+    <div class="svc-suite-row">
+
+      <a class="svc-suite-panel" href="#process-mapping">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">☑</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">01 · Foundations</span>
+          <span class="svc-suite-body-title">process <b>mapping</b></span>
+          <span class="svc-suite-body-desc">Tangled workflows become SOPs your team can actually follow, step by step.</span>
+        </span>
+        <span class="svc-suite-tag">Process Mapping &amp; SOPs</span>
+      </a>
+
+      <a class="svc-suite-panel" href="#automation">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">⚙</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">02 · Systems</span>
+          <span class="svc-suite-body-title">workflow <b>automation</b></span>
+          <span class="svc-suite-body-desc">Repetitive admin work gets automated, without changing the tools you already trust.</span>
+        </span>
+        <span class="svc-suite-tag">Workflow Automation</span>
+      </a>
+
+      <a class="svc-suite-panel" href="#reporting">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">📊</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">03 · Visibility</span>
+          <span class="svc-suite-body-title">dashboards &amp; <b>reporting</b></span>
+          <span class="svc-suite-body-desc">Status that answers itself — live dashboards and client-ready summaries on schedule.</span>
+        </span>
+        <span class="svc-suite-tag">Dashboards &amp; Reporting</span>
+      </a>
+
+      <a class="svc-suite-panel" href="#kpi-monitoring">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">◔</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">04 · Performance</span>
+          <span class="svc-suite-body-title">kpi <b>monitoring</b></span>
+          <span class="svc-suite-body-desc">Tracking the numbers that show whether a process is actually healthy.</span>
+        </span>
+        <span class="svc-suite-tag">KPI Monitoring</span>
+      </a>
+
+      <a class="svc-suite-panel" href="#qa-calibration">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">👁</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">05 · Quality</span>
+          <span class="svc-suite-body-title">qa &amp; <b>calibration</b></span>
+          <span class="svc-suite-body-desc">Enterprise-grade scoring rigor and calibration that actually aligns reviewers.</span>
+        </span>
+        <span class="svc-suite-tag">QA &amp; Calibration</span>
+      </a>
+
+      <a class="svc-suite-panel" href="#client-communication">
+        <span class="svc-suite-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="svc-suite-graphic" aria-hidden="true">💬</span>
+        <span class="svc-suite-body">
+          <span class="svc-suite-body-eyebrow">06 · Relationships</span>
+          <span class="svc-suite-body-title">client <b>communication</b></span>
+          <span class="svc-suite-body-desc">Regular updates and real-time status, without it landing on your plate.</span>
+        </span>
+        <span class="svc-suite-tag">Client Communication</span>
+      </a>
+
+    </div>
+  </nav>
+
+  <!-- ================= SKILL BLOCKS ================= -->
+  <div class="svc-block-wrap">
+
+    <section class="svc-block" id="process-mapping">
+      <div>
+        <div class="svc-eyebrow"><span class="num">01</span><span class="label">Foundations</span></div>
+        <h2>Process Mapping &amp; <b>SOP Design</b></h2>
+        <p class="desc">I take workflows that live in someone's head — or across six different Slack threads — and turn them into documentation your team can actually follow, hand off, and improve.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>End-to-end process audits, from intake to handoff</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Step-by-step SOPs written for the person actually doing the task</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Living documentation in Notion, kept current as processes change</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">SOP Library</div>
+        <div class="glyph">☑</div>
+      </div>
+    </section>
+
+    <section class="svc-block reverse" id="automation">
+      <div>
+        <div class="svc-eyebrow"><span class="num">02</span><span class="label">Systems</span></div>
+        <h2>Workflow <b>Automation</b></h2>
+        <p class="desc">Repetitive admin work gets automated, not endured. I build lightweight scripts and integrations that remove the manual steps without changing the tools your team already trusts.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Google Apps Script automations for Sheets-based workflows</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Slack and Zendesk notifications wired into existing pipelines</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Recurring reports and data pulls that run without a reminder</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">Apps Script</div>
+        <div class="glyph">⚙</div>
+      </div>
+    </section>
+
+    <section class="svc-block" id="reporting">
+      <div>
+        <div class="svc-eyebrow"><span class="num">03</span><span class="label">Visibility</span></div>
+        <h2>Dashboards &amp; <b>Reporting</b></h2>
+        <p class="desc">Status shouldn't require a meeting to find out. I build and maintain dashboards that answer "where do things stand?" on their own, on a rhythm you set.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Live Sheets dashboards for volume, turnaround, and backlog</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Client-ready summaries, formatted and sent on schedule</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Ongoing dashboard upkeep as data sources shift</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">Weekly Cadence</div>
+        <div class="glyph">📊</div>
+      </div>
+    </section>
+
+    <section class="svc-block reverse" id="kpi-monitoring">
+      <div>
+        <div class="svc-eyebrow"><span class="num">04</span><span class="label">Performance</span></div>
+        <h2><b>KPI</b> Monitoring &amp; Analytics</h2>
+        <p class="desc">I track the numbers that actually indicate whether a process is healthy, flag drift early, and translate raw metrics into decisions your team can act on.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Daily and weekly KPI tracking against agreed targets</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Early flags on trend drift, before it becomes a real problem</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Root-cause notes attached to every anomaly, not just the number</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">Trend Tracking</div>
+        <div class="glyph">◔</div>
+      </div>
+    </section>
+
+    <section class="svc-block" id="qa-calibration">
+      <div>
+        <div class="svc-eyebrow"><span class="num">05</span><span class="label">Quality</span></div>
+        <h2><b>QA</b> &amp; Calibration</h2>
+        <p class="desc">Enterprise-grade scoring rigor, brought to teams that need consistent, defensible quality checks — with calibration sessions that actually align reviewers instead of just logging disagreements.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Clear, written scoring criteria your team can apply consistently</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Regular calibration sessions to keep reviewers aligned</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Sample-based audits that catch drift before it scales</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">Calibrated</div>
+        <div class="glyph">👁</div>
+      </div>
+    </section>
+
+    <section class="svc-block reverse" id="client-communication">
+      <div>
+        <div class="svc-eyebrow"><span class="num">06</span><span class="label">Relationships</span></div>
+        <h2>Client &amp; Stakeholder <b>Communication</b></h2>
+        <p class="desc">You stay in the driver's seat. I handle the day-to-day updates, status checks, and follow-through so stakeholders always know where things stand — without it landing on your plate.</p>
+        <div class="svc-feature-list">
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Regular status updates on a cadence you set, not one I default to</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Personalized, responsive support across time zones</span>
+          </div>
+          <div class="svc-feature">
+            <div class="svc-feature-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.2 3.2L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Scope and timelines agreed up front — no surprise asks</span>
+          </div>
+        </div>
+        <a class="btn solid" href="index.html#contact">Ask about this&nbsp;→</a>
+      </div>
+      <div class="svc-media">
+        <div class="svc-media-badge">Always In Sync</div>
+        <div class="glyph">💬</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ================= STATS ================= -->
+  <section class="svc-stats">
+    <div class="svc-stats-inner">
+      <div>
+        <h3>&lt;2h</h3>
+        <p>TYPICAL RESPONSE TIME</p>
+      </div>
+      <div>
+        <h3>6</h3>
+        <p>CORE SERVICES, ONE POINT OF CONTACT</p>
+      </div>
+      <div>
+        <h3>100%</h3>
+        <p>REMOTE, ACROSS TIME ZONES</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="svc-cta" id="contact">
+    <div class="svc-cta-inner">
+      <h2>Not sure which service fits? Let's talk it through.</h2>
+      <p>Tell me what's eating up your team's time, and I'll tell you honestly whether I'm the right fit for it.</p>
+      <a class="btn" href="index.html#contact">Get In Touch&nbsp;→</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">MAELSTRO<span>.</span></div>
+        <p>Operations, quality, and automation — delivered with care.</p>
+        <div class="socials">
+          <a href="#">in</a>
+          <a href="#">✉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#process-mapping">Process Mapping</a></li>
+          <li><a href="#automation">Automation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Work</h4>
+        <ul><li><a href="index.html#">Case Studies</a></li><li><a href="index.html#">Projects</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul><li><a href="index.html#">Background</a></li><li><a href="index.html#">Résumé</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul><li><a href="index.html#contact">Email</a></li><li><a href="index.html#">LinkedIn</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul><li><a href="index.html#">Blog</a></li><li><a href="index.html#">Résumé PDF</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mael. Portfolio site.</span>
+      <div class="links">
+        <a href="index.html#">Privacy Policy</a>
+        <a href="index.html#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav dropdowns — tap-to-toggle for touch devices
+    (function(){
+      const items = document.querySelectorAll('.nav-links li.has-dropdown');
+      items.forEach(item=>{
+        item.addEventListener('click', (e)=>{
+          if(window.matchMedia('(hover: hover)').matches) return;
+          e.stopPropagation();
+          const wasOpen = item.classList.contains('open');
+          items.forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      document.addEventListener('click', ()=>{ items.forEach(i=> i.classList.remove('open')); });
+    })();
+
+    // Mobile hamburger menu
+    (function(){
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+      btn.addEventListener('click', ()=>{
+        const isOpen = menu.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      menu.querySelectorAll('.mobile-menu-item').forEach(item=>{
+        const toggle = item.querySelector('.mobile-menu-toggle');
+        toggle.addEventListener('click', ()=>{
+          const wasOpen = item.classList.contains('open');
+          menu.querySelectorAll('.mobile-menu-item').forEach(i=> i.classList.remove('open'));
+          if(!wasOpen) item.classList.add('open');
+        });
+      });
+      menu.querySelectorAll('.mobile-submenu a, .mobile-menu-inner > .track-btn').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      window.addEventListener('resize', ()=>{
+        if(window.innerWidth > 900){
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    // If arriving with a hash (e.g. from index.html nav), make sure the
+    // right section is scrolled into view under the sticky header.
+    window.addEventListener('load', ()=>{
+      if(location.hash){
+        const el = document.querySelector(location.hash);
+        if(el) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      }
+    });
+  </script>
+</body>
+</html>
