@@ -6,6 +6,7 @@
 <title>Mael — Operations &amp; Automation VA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="maelstro.png">
 <style>
   :root{
     --cream:#F2EFE6;
@@ -115,7 +116,11 @@
     font-weight:700;
     color:var(--red);
     letter-spacing:-.01em;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
   }
+  .logo img{height:1em;width:auto;display:block;}
   .logo span{color:var(--ink);}
   .nav-links{
     display:flex;
@@ -1091,7 +1096,7 @@
   </div>
 
   <nav>
-    <div class="logo">MAELSTRO<span>.</span></div>
+    <div class="logo"><img src="maelstro.png" alt="Maelstro logo">MAELSTRO<span>.</span></div>
     <ul class="nav-links">
       <li class="has-dropdown"><a href="services.html">Services</a> <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <div class="nav-dropdown">
@@ -1572,7 +1577,7 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+        <a class="logo" href="index.html"><img src="maelstro.png" alt="Maelstro logo">MAELSTRO<span>.</span></a>
         <p>Operations, quality, and automation — delivered with care.</p>
         <div class="socials">
           <a href="#">in</a>
