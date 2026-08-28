@@ -259,8 +259,9 @@
     .svc-suite-panel{
       min-width:auto;
       min-height:0;
-      transition:flex-grow .55s cubic-bezier(.22,1,.36,1);
+      transition:flex-grow .28s cubic-bezier(.22,1,.36,1);
     }
+    .svc-suite-arrow{transition:transform .2s ease, background .15s ease;}
 
     /* Neutralize desktop hover/default rules on mobile — scroll-driven .js-active takes over entirely */
     .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1),
@@ -286,7 +287,7 @@
     .svc-suite-body{
       left:18px;right:18px;
       opacity:0;max-height:0;overflow:hidden;pointer-events:none;
-      transition:opacity .3s ease, max-height .3s ease;
+      transition:opacity .18s ease, max-height .18s ease;
     }
     .svc-suite-body-title{font-size:18px;}
     .svc-suite-body-desc{max-width:100%;}
@@ -885,36 +886,73 @@
       document.addEventListener('click', ()=>{ items.forEach(i=> i.classList.remove('open')); });
     })();
 
-    // Vertical accordion (mobile): expand each card as it scrolls through view
+    // Vertical accordion (mobile): expand whichever card is closest to viewport center,
+    // continuously as the user scrolls — plus tap-to-toggle without auto-jumping.
     (function(){
       const row = document.querySelector('.svc-suite-row');
       if(!row) return;
       const panels = Array.from(row.querySelectorAll('.svc-suite-panel'));
       const mq = window.matchMedia('(max-width:900px)');
-      let observer = null;
+      let ticking = false;
+      let manualLock = false;     // true right after a tap, so scroll doesn't fight the tap
+      let manualLockTimer = null;
 
       function activate(panel){
         panels.forEach(p => p.classList.toggle('js-active', p === panel));
       }
 
-      function setup(){
-        if(observer) observer.disconnect();
-        panels.forEach(p => p.classList.remove('js-active'));
-        if(!mq.matches) return; // desktop keeps hover behavior only
-
-        panels[0].classList.add('js-active'); // first card open by default, matches desktop resting state
-
-        observer = new IntersectionObserver((entries)=>{
-          entries.forEach(entry=>{
-            if(entry.isIntersecting) activate(entry.target);
-          });
-        }, { root:null, rootMargin:'-45% 0px -45% 0px', threshold:0 });
-
-        panels.forEach(p => observer.observe(p));
+      function closestToCenter(){
+        const centerY = window.innerHeight / 2;
+        let closest = panels[0];
+        let closestDist = Infinity;
+        panels.forEach(p=>{
+          const r = p.getBoundingClientRect();
+          const panelCenter = r.top + r.height / 2;
+          const dist = Math.abs(panelCenter - centerY);
+          if(dist < closestDist){ closestDist = dist; closest = p; }
+        });
+        return closest;
       }
 
-      setup();
+      function onScroll(){
+        if(!mq.matches || manualLock) { ticking = false; return; }
+        activate(closestToCenter());
+        ticking = false;
+      }
+
+      function requestTick(){
+        if(!ticking){
+          ticking = true;
+          requestAnimationFrame(onScroll);
+        }
+      }
+
+      function setup(){
+        panels.forEach(p => p.classList.remove('js-active'));
+        if(!mq.matches) return; // desktop keeps hover behavior only
+        activate(closestToCenter());
+      }
+
+      window.addEventListener('scroll', requestTick, { passive:true });
+      window.addEventListener('resize', requestTick);
       mq.addEventListener('change', setup);
+      setup();
+
+      // Tap behavior: first tap on a non-active card opens it (no navigation).
+      // Tap on the already-active card navigates as normal.
+      panels.forEach(panel=>{
+        panel.addEventListener('click', (e)=>{
+          if(!mq.matches) return; // desktop: default link behavior
+          if(!panel.classList.contains('js-active')){
+            e.preventDefault();
+            activate(panel);
+            manualLock = true;
+            clearTimeout(manualLockTimer);
+            manualLockTimer = setTimeout(()=>{ manualLock = false; }, 900); // let scroll resync shortly after
+          }
+          // else: already open — let the click navigate to the section
+        });
+      });
     })();
 
     // Mobile hamburger menu
