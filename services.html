@@ -260,24 +260,27 @@
       min-width:auto;
       min-height:0;
       transition:flex-grow .28s cubic-bezier(.22,1,.36,1);
+      contain:layout style;
+      will-change:flex-grow;
     }
     .svc-suite-arrow{transition:transform .2s ease, background .15s ease;}
 
-    /* Neutralize desktop hover/default rules on mobile — scroll-driven .js-active takes over entirely */
-    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1),
-    .svc-suite-row:hover .svc-suite-panel:hover{
+    /* Neutralize desktop hover/default rules on mobile — :not(.js-active) guard so the
+       scroll/tap-driven active state (lower specificity) can still win cleanly */
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1):not(.js-active),
+    .svc-suite-row:hover .svc-suite-panel:hover:not(.js-active){
       flex-grow:1;
     }
-    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-arrow,
-    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-arrow{
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1):not(.js-active) .svc-suite-arrow,
+    .svc-suite-row:hover .svc-suite-panel:hover:not(.js-active) .svc-suite-arrow{
       transform:rotate(90deg);
     }
-    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-graphic,
-    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-graphic{
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1):not(.js-active) .svc-suite-graphic,
+    .svc-suite-row:hover .svc-suite-panel:hover:not(.js-active) .svc-suite-graphic{
       opacity:0;
     }
-    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-body-desc,
-    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-body-desc{
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1):not(.js-active) .svc-suite-body-desc,
+    .svc-suite-row:hover .svc-suite-panel:hover:not(.js-active) .svc-suite-body-desc{
       opacity:0;max-height:0;
     }
 
@@ -897,8 +900,13 @@
       let manualLock = false;     // true right after a tap, so scroll doesn't fight the tap
       let manualLockTimer = null;
 
+      let currentActive = null;
+
       function activate(panel){
-        panels.forEach(p => p.classList.toggle('js-active', p === panel));
+        if(panel === currentActive) return; // no-op: skip all DOM writes, avoids per-frame reflow
+        if(currentActive) currentActive.classList.remove('js-active');
+        panel.classList.add('js-active');
+        currentActive = panel;
       }
 
       function closestToCenter(){
@@ -929,6 +937,7 @@
 
       function setup(){
         panels.forEach(p => p.classList.remove('js-active'));
+        currentActive = null;
         if(!mq.matches) return; // desktop keeps hover behavior only
         activate(closestToCenter());
       }
