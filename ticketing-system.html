@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticketing System Simulation — Mael | Operations &amp; Automation VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2EFE6; --paper:#FBF9F3; --ink:#1E1C18;
+    --red:#E24E32; --red-dark:#C93F26; --blue:#AFC8DE;
+    --line:#D8D3C4; --muted:#5B564C;
+    --green:#2F6B3A; --green-tint:#E4EEE4;
+    --amber:#B5851C; --amber-tint:#FBF0DC;
+    --radius:3px;
+    --shadow-sm:4px 4px 0 rgba(30,28,24,.16);
+    --shadow-md:6px 6px 0 rgba(30,28,24,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{overflow-x:clip;width:100%;}
+  body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:clip;}
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;letter-spacing:-.015em;font-weight:400;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;}
+
+  /* ── Simulation ribbon ── */
+  .sim-ribbon{background:var(--ink);color:var(--paper);font-size:12px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;flex-wrap:wrap;}
+  .sim-ribbon b{color:var(--red);}
+  .sim-ribbon a{text-decoration:underline;text-underline-offset:2px;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;max-width:1280px;margin:0 auto;background:var(--cream);border-bottom:2px solid var(--ink);}
+  .logo{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--red);}
+  .logo span{color:var(--ink);}
+  .back-link{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;}
+  .back-link:hover{color:var(--red);}
+
+  /* ══════════ ROLE SELECT ══════════ */
+  #roleSelect{max-width:900px;margin:0 auto;padding:72px 24px 100px;text-align:center;}
+  .role-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  #roleSelect h1{font-size:clamp(32px,5vw,48px);line-height:1.1;margin-bottom:16px;}
+  #roleSelect p.lede{color:var(--muted);font-size:17px;max-width:560px;margin:0 auto 48px;line-height:1.6;}
+  .role-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:left;}
+  .role-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:28px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;display:flex;flex-direction:column;}
+  .role-card:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-md);}
+  .role-card .glyph{font-size:34px;margin-bottom:14px;}
+  .role-card h3{font-size:22px;margin-bottom:8px;}
+  .role-card p{color:var(--muted);font-size:14.5px;line-height:1.55;margin-bottom:18px;flex:1;}
+  .role-card .role-cta{align-self:flex-start;background:var(--ink);color:var(--paper);font-weight:700;font-size:13px;padding:9px 18px;border-radius:var(--radius);text-transform:uppercase;letter-spacing:.03em;}
+  .role-card.teammate .role-cta{background:var(--blue);color:var(--ink);}
+  .role-card.sme .role-cta{background:var(--red);color:#fff;}
+  @media(max-width:720px){.role-cards{grid-template-columns:1fr;}}
+
+  /* ══════════ APP SHELL ══════════ */
+  #appShell{display:none;height:calc(100vh - 118px);min-height:560px;flex-direction:column;}
+  .app-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .app-topbar-left{display:flex;align-items:center;gap:12px;}
+  .role-pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:5px 12px;border-radius:var(--radius);border:1px solid var(--ink);}
+  .role-pill.teammate{background:var(--blue);}
+  .role-pill.sme{background:var(--red);color:#fff;border-color:var(--red);}
+  .app-title{font-weight:700;font-size:14px;}
+  .switch-role-btn{font-size:12px;font-weight:700;border:1px solid var(--line-strong,var(--ink));background:var(--cream);padding:6px 12px;border-radius:var(--radius);cursor:pointer;}
+  .switch-role-btn:hover{border-color:var(--red);color:var(--red-dark);}
+  .clock{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}
+
+  .layout{flex:1;display:flex;overflow:hidden;}
+  .col{display:flex;flex-direction:column;overflow:hidden;background:var(--cream);border-right:1px solid var(--line);min-width:0;}
+  .col:last-child{border-right:none;}
+  .col-left{width:270px;flex-shrink:0;}
+  .col-center{flex:1;min-width:280px;}
+  .col-right{width:300px;flex-shrink:0;}
+  @media(max-width:960px){.col-right{display:none;}}
+  @media(max-width:720px){.col-left{width:200px;}}
+
+  .col-header{padding:12px 14px;border-bottom:1px solid var(--line);background:var(--paper);flex-shrink:0;}
+  .col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;}
+  .filter-row{display:flex;gap:5px;flex-wrap:wrap;}
+  .filter-btn{border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 10px;font-size:10.5px;font-weight:700;border-radius:var(--radius);cursor:pointer;text-transform:uppercase;letter-spacing:.02em;}
+  .filter-btn.active{background:var(--red);color:#fff;border-color:var(--red);}
+
+  .list{flex:1;overflow-y:auto;padding:8px;}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:32px 12px;}
+
+  .t-card{background:var(--paper);border:1px solid var(--line);border-left:3px solid transparent;border-radius:var(--radius);padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:border-color .1s;}
+  .t-card:hover{border-color:var(--ink);}
+  .t-card.active{border-left-color:var(--red);background:var(--cream);border-color:var(--red);}
+  .t-card.overdue{border-left-color:#b4241c;}
+  .t-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px;}
+  .t-id{font-weight:700;font-size:12px;}
+  .badge{font-size:9.5px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:var(--radius);letter-spacing:.03em;}
+  .badge.open{background:var(--blue);color:var(--ink);}
+  .badge.overdue{background:#b4241c;color:#fff;}
+  .badge.resolved{background:var(--green);color:#fff;}
+  .t-q{font-size:12px;color:var(--ink);margin-bottom:3px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .t-meta{font-size:10.5px;color:var(--muted);}
+  .new-badge{background:var(--red);color:#fff;font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:var(--radius);text-transform:uppercase;}
+
+  .center-header{padding:12px 16px;border-bottom:2px solid var(--red);background:var(--paper);flex-shrink:0;display:flex;align-items:center;gap:10px;justify-content:space-between;}
+  .center-title{font-weight:700;font-size:14px;}
+  .center-body{flex:1;overflow-y:auto;padding:14px 16px;}
+  .detail-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:12px 14px;margin-bottom:10px;}
+  .dc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;}
+  .field-name{font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.03em;}
+  .field-value{font-size:12.5px;line-height:1.4;word-break:break-word;}
+  .field-block{margin-top:6px;}
+  .resolution-box{border:1px solid var(--green);background:var(--green-tint);}
+  .resolution-tag{display:inline-block;background:var(--green);color:#fff;font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:var(--radius);text-transform:uppercase;margin-bottom:6px;}
+  .activity-item{border-bottom:1px solid var(--line);padding:9px 0;}
+  .activity-item:last-child{border-bottom:none;}
+  .activity-head{display:flex;gap:8px;align-items:center;margin-bottom:3px;flex-wrap:wrap;}
+  .activity-sender{font-weight:700;font-size:12px;}
+  .activity-time{color:var(--muted);font-size:10px;}
+  .activity-type{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:var(--radius);border:1px solid var(--line);background:var(--cream);color:var(--muted);}
+  .activity-type.resolution{background:var(--green);border-color:var(--green);color:#fff;}
+  .activity-type.note{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .activity-text{font-size:12.5px;line-height:1.45;white-space:pre-wrap;}
+
+  textarea,input,select{width:100%;border:1px solid var(--ink);border-radius:var(--radius);padding:8px 10px;font-size:12.5px;font-family:inherit;outline:none;background:var(--paper);color:var(--ink);}
+  textarea:focus,input:focus,select:focus{border-color:var(--red);}
+  textarea{resize:vertical;min-height:52px;}
+  label.field-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin:8px 0 4px;}
+  label.field-label:first-child{margin-top:0;}
+
+  .composer{border-top:2px solid var(--red);background:var(--paper);padding:10px 14px;flex-shrink:0;}
+  .composer-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:flex-end;}
+  .btn{border:1px solid var(--ink);border-radius:var(--radius);padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;transition:transform .1s,box-shadow .1s;background:var(--paper);}
+  .btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:var(--shadow-sm);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-red{background:var(--red);color:#fff;border-color:var(--red);}
+  .btn-green{background:var(--green);color:#fff;border-color:var(--green);}
+  .btn-blue{background:var(--blue);color:var(--ink);}
+  .btn-ghost{background:var(--paper);}
+  .status-msg{min-height:14px;font-size:11px;font-weight:700;margin-top:6px;}
+  .status-msg.ok{color:var(--green);}
+  .status-msg.err{color:#b4241c;}
+
+  .form-body{flex:1;overflow-y:auto;padding:14px;}
+  .form-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px;}
+  .right-body{flex:1;overflow-y:auto;padding:14px;}
+  .control-card{background:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px;margin-bottom:12px;}
+  .toast{position:fixed;right:20px;bottom:20px;background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:var(--radius);font-size:12.5px;font-weight:600;box-shadow:var(--shadow-md);z-index:999;display:none;max-width:320px;}
+  .toast.show{display:block;}
+
+  @media(max-width:960px){
+    #appShell{height:auto;min-height:0;}
+    .layout{flex-direction:column;}
+    .col{width:100% !important;border-right:none;border-bottom:1px solid var(--line);max-height:340px;}
+    .col-center{max-height:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="sim-ribbon">
+    <b>SIMULATION</b> — a working mock-up of an internal support ticketing system I built and maintain. No data leaves your browser. <a href="project.html">← Back to Projects</a>
+  </div>
+
+  <nav>
+    <a class="logo" href="index.html">MAELSTRO<span>.</span></a>
+    <a class="back-link" href="project.html">← All Projects</a>
+  </nav>
+
+  <!-- ══════════ ROLE SELECT ══════════ -->
+  <section id="roleSelect">
+    <div class="role-eyebrow">Campaign Portal Ticketing System</div>
+    <h1>Who are you signing in as?</h1>
+    <p class="lede">This portal serves two roles in real life: a Teammate submitting a question, and an SME (Subject Matter Expert) answering it. Pick one to see how that side of the queue works.</p>
+    <div class="role-cards">
+      <div class="role-card teammate" onclick="startSim('TEAMMATE')">
+        <div class="glyph">✉</div>
+        <h3>Teammate</h3>
+        <p>Submits a support ticket when a process question comes up mid-shift, then tracks the answer and can follow up once it arrives.</p>
+        <span class="role-cta">Continue as Teammate</span>
+      </div>
+      <div class="role-card sme" onclick="startSim('SME')">
+        <div class="glyph">🎧</div>
+        <h3>SME</h3>
+        <p>Works the live queue — claims tickets, sends the official answer, adds internal notes, and marks tickets resolved.</p>
+        <span class="role-cta">Continue as SME</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ APP SHELL ══════════ -->
+  <div id="appShell">
+    <div class="app-topbar">
+      <div class="app-topbar-left">
+        <span class="role-pill" id="rolePill">TEAMMATE</span>
+        <span class="app-title">Support Queue — Loop Fulfillment</span>
+      </div>
+      <div class="app-topbar-left">
+        <span class="clock" id="clockDisplay"></span>
+        <button class="switch-role-btn" onclick="switchRole()">↺ Switch Role</button>
+      </div>
+    </div>
+    <div class="layout" id="layoutRoot"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+ * IN-BROWSER SIMULATION — no backend, no network calls.
+ * Mirrors the shape of a real teammate/SME ticketing workflow:
+ * submit → claim → resolve, with follow-ups either side.
+ * ══════════════════════════════════════════════════════════ */
+
+var CATEGORIES = ["Field Agent","Customer"];
+var SOPS = ["Address Correction","Delivery Rerouting","Package Refusal Handling","Account Verification",
+  "Delivery Investigation","Missed Instructions","Proof of Delivery Review","Customer Feedback Handling",
+  "Restricted Access Locations","General Process Clarification"];
+var ASSISTANCE_TYPES = ["SOP Clarification","Process Confirmation","Escalation Support","Live Assistance","System/Tool Issue","Training Gap"];
+var SME_NAMES = ["Priya R.","Marcus T.","Dana O."];
+var SLA_MS = 3*60*1000; /* demo SLA: 3 minutes unclaimed → OVERDUE, sped up from the real 20-min window so it's visible in a short visit */
+
+var role = null; /* 'TEAMMATE' | 'SME' */
+var me = { teammate:"You (Teammate)", sme:"You (SME)" };
+var tickets = [];
+var ticketSeq = 100;
+var currentId = null;
+var tmFilter = "OPEN";
+var smeFilter = "ALL";
+var clockTimer = null;
+
+function pad(n){ return n<10?"0"+n:""+n; }
+function fmtTime(ms){ var d=new Date(ms); return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function fmtShort(ms){ var d=new Date(ms); return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+function esc(s){ return String(s===undefined||s===null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escML(s){ return esc(s).replace(/\n/g,"<br>"); }
+function nextId(){ ticketSeq++; return "LOOP-"+String(ticketSeq).padStart(4,"0"); }
+
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(function(){ t.classList.remove("show"); },2600);
+}
+
+function status(t){
+  if(t.resolved) return "RESOLVED";
+  if(!t.claimedBy && (Date.now()-t.createdMs)>SLA_MS) return "OVERDUE";
+  return "OPEN";
+}
+
+/* ── Seed a handful of example tickets so the queue isn't empty on first look ── */
+function seed(){
+  var now=Date.now();
+  function mk(offsetMin, opts){
+    var t={
+      id:nextId(), createdMs: now-offsetMin*60000,
+      contactId: opts.contactId, category: opts.category, sop: opts.sop, assistance: opts.assistance,
+      summary: opts.summary, question: opts.question,
+      claimedBy: opts.claimedBy||"", resolution: opts.resolution||"", resolvedMs: opts.resolvedMs||null,
+      resolved: !!opts.resolution && !!opts.resolved,
+      submittedBy: opts.submittedBy||"Jordan K.",
+      messages: []
+    };
+    t.messages.push({role:"TEAMMATE",name:t.submittedBy,text:t.question,type:"QUESTION",ms:t.createdMs});
+    if(t.claimedBy) t.messages.push({role:"SYSTEM",name:"SYSTEM",text:"Claimed by "+t.claimedBy+".",type:"SYSTEM",ms:t.createdMs+2*60000});
+    if(t.resolution) t.messages.push({role:"SME",name:t.claimedBy,text:t.resolution,type:"RESOLUTION",ms:t.createdMs+6*60000});
+    if(opts.followup) t.messages.push({role:"TEAMMATE",name:t.submittedBy,text:opts.followup,type:"TEAMMATE_FOLLOW_UP",ms:t.createdMs+8*60000});
+    return t;
+  }
+  tickets.push(mk(1,{contactId:"CT-4471",category:"Field Agent",sop:"Restricted Access Locations",
+    assistance:"Live Assistance",summary:"Gate code not accepted at drop-off.",
+    question:"Gate code on the ticket isn't working and the recipient isn't answering calls — do I hold the parcel or attempt again tomorrow?"}));
+  tickets.push(mk(9,{contactId:"CT-3390",category:"Customer",sop:"Proof of Delivery Review",
+    assistance:"SOP Clarification",summary:"Customer disputes delivery photo.",
+    question:"Customer says the POD photo doesn't show their door. Do I need to request a resend from the agent or escalate directly?",
+    claimedBy:"Priya R."}));
+  tickets.push(mk(40,{contactId:"CT-2205",category:"Field Agent",sop:"Address Correction",
+    assistance:"Process Confirmation",summary:"Geocode pin two blocks off.",
+    question:"Pin is dropping two blocks from the actual address on this route. Should I correct it myself or flag it for someone else?",
+    claimedBy:"Marcus T.",
+    resolution:"You can nudge the pin yourself from the route screen — just confirm the street number against the label first. I've also flagged this address for a geocode review on our end.",
+    resolved:true, resolvedMs: now-40*60000+6*60000,
+    followup:"Got it, thank you — corrected and delivered."}));
+  tickets.push(mk(140,{contactId:"CT-1187",category:"Customer",sop:"Customer Feedback Handling",
+    assistance:"SOP Clarification",summary:"Low rating tied to a late window, not the agent.",
+    question:"Customer left a 2-star review but the note says it was about the delivery window, not the agent. Can this be reassigned off the agent's score?",
+    claimedBy:"Dana O.",
+    resolution:"Yes — flag it in the ratings tool with reason \"window mismatch, not agent conduct\" and it'll be excluded from that agent's score in the next cycle.",
+    resolved:true, resolvedMs: now-140*60000+9*60000}));
+}
+
+/* ══════════════════════════════════════════════════════════
+ * ROLE / BOOT
+ * ══════════════════════════════════════════════════════════ */
+function startSim(r){
+  role=r;
+  document.getElementById("roleSelect").style.display="none";
+  document.getElementById("appShell").style.display="flex";
+  document.getElementById("rolePill").textContent=r;
+  document.getElementById("rolePill").className="role-pill "+(r==="SME"?"sme":"teammate");
+  document.getElementById("app-title") && 0;
+  renderLayout();
+  startClock();
+  showToast(r==="SME" ? "Signed in as an SME — the live queue is on your left." : "Signed in as a Teammate — submit a question on the right.");
+}
+function switchRole(){
+  currentId=null;
+  startSim(role==="SME" ? "TEAMMATE" : "SME");
+}
+function startClock(){
+  if(clockTimer) clearInterval(clockTimer);
+  clockTimer=setInterval(function(){
+    document.getElementById("clockDisplay").textContent=new Date().toLocaleTimeString();
+    tickTimers();
+  },1000);
+  document.getElementById("clockDisplay").textContent=new Date().toLocaleTimeString();
+}
+function tickTimers(){
+  /* Re-render just the queue badges/labels so OPEN → OVERDUE transitions show live, without a full re-render cost */
+  if(role==="TEAMMATE") renderTmList(); else renderSmeList();
+  renderCenter();
+}
+
+/* ══════════════════════════════════════════════════════════
+ * LAYOUT
+ * ══════════════════════════════════════════════════════════ */
+function renderLayout(){
+  var root=document.getElementById("layoutRoot");
+  if(role==="TEAMMATE"){
+    root.innerHTML = ''
+      +'<div class="col col-left">'
+        +'<div class="col-header"><div class="col-title">My Tickets</div>'
+        +'<div class="filter-row">'
+          +'<button class="filter-btn" id="tmf_OPEN" onclick="setTmFilter(&quot;OPEN&quot;)">Open</button>'
+          +'<button class="filter-btn" id="tmf_RESOLVED" onclick="setTmFilter(&quot;RESOLVED&quot;)">Resolved</button>'
+        +'</div></div>'
+        +'<div class="list" id="tmList"></div>'
+      +'</div>'
+      +'<div class="col col-center">'
+        +'<div class="center-header"><div class="center-title" id="tmCenterTitle">Select a ticket</div><div id="tmCenterBadge"></div></div>'
+        +'<div class="center-body" id="tmCenterBody"><div class="empty">Open a ticket to see the answer and history, or submit a new one on the right.</div></div>'
+        +'<div class="composer" id="tmComposer" style="display:none;">'
+          +'<label class="field-label">Follow-up question</label>'
+          +'<textarea id="tmReplyInput" rows="2" maxlength="600" placeholder="Add a follow-up question…"></textarea>'
+          +'<div class="composer-actions"><button class="btn btn-blue" onclick="tmSendFollowUp()">Send Follow-up</button></div>'
+          +'<div class="status-msg" id="tmReplyStatus"></div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="col col-right">'
+        +'<div class="col-header"><div class="col-title">Submit New Ticket</div></div>'
+        +'<div class="form-body"><div class="form-card">'
+          +'<label class="field-label">Contact ID</label><input id="reqContact" placeholder="e.g. CT-9981">'
+          +'<label class="field-label">Category</label><select id="reqCategory"></select>'
+          +'<label class="field-label">SOP Followed</label><select id="reqSop"></select>'
+          +'<label class="field-label">Type of Assistance</label><select id="reqAssistance"></select>'
+          +'<label class="field-label">Summary of Issue</label><textarea id="reqSummary" rows="2" maxlength="240" placeholder="Brief summary…"></textarea>'
+          +'<label class="field-label">Specific Question</label><textarea id="reqQuestion" rows="3" maxlength="400" placeholder="Your question…"></textarea>'
+          +'<div class="composer-actions" style="justify-content:flex-start;margin-top:12px;"><button class="btn btn-red" style="width:100%;" onclick="submitTicket()">Submit Ticket</button></div>'
+          +'<div class="status-msg" id="formStatus"></div>'
+        +'</div></div>'
+      +'</div>';
+    populateSelect("reqCategory",CATEGORIES,"Select category…");
+    populateSelect("reqSop",SOPS,"Select SOP…");
+    populateSelect("reqAssistance",ASSISTANCE_TYPES,"Select type…");
+    document.getElementById("tmf_"+tmFilter).classList.add("active");
+    renderTmList();
+    renderCenter();
+  } else {
+    root.innerHTML = ''
+      +'<div class="col col-left">'
+        +'<div class="col-header"><div class="col-title">Ticket Queue</div>'
+        +'<div class="filter-row">'
+          +'<button class="filter-btn" id="smf_ALL" onclick="setSmeFilter(&quot;ALL&quot;)">All</button>'
+          +'<button class="filter-btn" id="smf_OPEN" onclick="setSmeFilter(&quot;OPEN&quot;)">Open</button>'
+          +'<button class="filter-btn" id="smf_OVERDUE" onclick="setSmeFilter(&quot;OVERDUE&quot;)">Overdue</button>'
+          +'<button class="filter-btn" id="smf_UNCLAIMED" onclick="setSmeFilter(&quot;UNCLAIMED&quot;)">Unclaimed</button>'
+          +'<button class="filter-btn" id="smf_RESOLVED" onclick="setSmeFilter(&quot;RESOLVED&quot;)">Resolved</button>'
+        +'</div></div>'
+        +'<div class="list" id="smeList"></div>'
+      +'</div>'
+      +'<div class="col col-center">'
+        +'<div class="center-header"><div class="center-title" id="smeCenterTitle">Select a ticket</div><div id="smeCenterBadge"></div></div>'
+        +'<div class="center-body" id="smeCenterBody"><div class="empty">Open a ticket from the queue.</div></div>'
+        +'<div class="composer" id="smeComposer" style="display:none;">'
+          +'<label class="field-label">Response</label>'
+          +'<textarea id="composerInput" rows="2" maxlength="700" placeholder="Write the official answer or a follow-up…"></textarea>'
+          +'<div class="composer-actions">'
+            +'<button class="btn btn-green" id="sendResolutionBtn" onclick="smeSendResolution()">Official Resolution</button>'
+            +'<button class="btn btn-blue" id="sendFollowupBtn" onclick="smeSendFollowUp()">Follow-up</button>'
+          +'</div>'
+          +'<div class="status-msg" id="composerStatus"></div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="col col-right">'
+        +'<div class="col-header"><div class="col-title">Controls</div></div>'
+        +'<div class="right-body">'
+          +'<div class="control-card">'
+            +'<div class="dc-label">Claim Ticket</div>'
+            +'<button class="btn btn-red" id="claimBtn" style="width:100%;" onclick="smeClaim()" disabled>Claim Ticket</button>'
+          +'</div>'
+          +'<div class="control-card">'
+            +'<div class="dc-label">Internal Note</div>'
+            +'<textarea id="noteInput" rows="3" maxlength="400" placeholder="Internal note — hidden from teammate." disabled></textarea>'
+            +'<button class="btn btn-ghost" style="width:100%;margin-top:8px;" id="noteBtn" onclick="smeSaveNote()" disabled>Save Note</button>'
+          +'</div>'
+          +'<div class="control-card">'
+            +'<div class="dc-label">Resolve</div>'
+            +'<button class="btn btn-green" style="width:100%;" id="resolveBtn" onclick="smeResolve()" disabled>Mark as Resolved</button>'
+            +'<div class="status-msg" id="smeActionStatus"></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    document.getElementById("smf_"+smeFilter).classList.add("active");
+    renderSmeList();
+    renderCenter();
+  }
+}
+
+function populateSelect(id,opts,placeholder){
+  var sel=document.getElementById(id);
+  sel.innerHTML='<option value="">'+esc(placeholder)+'</option>'+opts.map(function(o){ return '<option>'+esc(o)+'</option>'; }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+ * TEAMMATE SIDE
+ * ══════════════════════════════════════════════════════════ */
+function setTmFilter(f){
+  tmFilter=f;
+  document.querySelectorAll("#tmf_OPEN,#tmf_RESOLVED").forEach(function(b){ b.classList.remove("active"); });
+  document.getElementById("tmf_"+f).classList.add("active");
+  renderTmList();
+}
+function renderTmList(){
+  var list=document.getElementById("tmList"); if(!list) return;
+  var mine=tickets.filter(function(t){
+    var s=status(t);
+    return tmFilter==="RESOLVED" ? s==="RESOLVED" : s!=="RESOLVED";
+  });
+  mine.sort(function(a,b){ return b.createdMs-a.createdMs; });
+  if(!mine.length){ list.innerHTML='<div class="empty">No tickets here yet.</div>'; return; }
+  list.innerHTML=mine.map(function(t){
+    var s=status(t);
+    var cls="t-card"+(t.id===currentId?" active":"")+(s==="OVERDUE"?" overdue":"");
+    return '<div class="'+cls+'" onclick="tmOpen(&quot;'+t.id+'&quot;)">'
+      +'<div class="t-top"><span class="t-id">'+t.id+'</span><span class="badge '+s.toLowerCase()+'">'+s+'</span></div>'
+      +'<div class="t-q">'+esc(t.question)+'</div>'
+      +'<div class="t-meta">'+(t.claimedBy?"Claimed: "+esc(t.claimedBy):"Waiting for support")+'</div>'
+      +'</div>';
+  }).join('');
+}
+function tmOpen(id){
+  currentId=id;
+  renderTmList();
+  renderCenter();
+  document.getElementById("tmComposer").style.display = status(getTicket(id))==="RESOLVED" ? "none" : "";
+}
+function getTicket(id){ return tickets.find(function(t){ return t.id===id; }); }
+
+function submitTicket(){
+  var contactId=document.getElementById("reqContact").value.trim();
+  var category=document.getElementById("reqCategory").value;
+  var sop=document.getElementById("reqSop").value;
+  var assistance=document.getElementById("reqAssistance").value;
+  var summary=document.getElementById("reqSummary").value.trim();
+  var question=document.getElementById("reqQuestion").value.trim();
+  var statusEl=document.getElementById("formStatus");
+  if(!contactId||!category||!sop||!assistance||!summary||!question){
+    statusEl.className="status-msg err"; statusEl.textContent="Please complete all fields.";
+    return;
+  }
+  var t={
+    id:nextId(), createdMs:Date.now(), contactId:contactId, category:category, sop:sop,
+    assistance:assistance, summary:summary, question:question,
+    claimedBy:"", resolution:"", resolved:false, resolvedMs:null,
+    submittedBy: me.teammate, messages:[]
+  };
+  t.messages.push({role:"TEAMMATE",name:me.teammate,text:question,type:"QUESTION",ms:t.createdMs});
+  tickets.unshift(t);
+  ["reqContact","reqSummary","reqQuestion"].forEach(function(id){ document.getElementById(id).value=""; });
+  ["reqCategory","reqSop","reqAssistance"].forEach(function(id){ document.getElementById(id).selectedIndex=0; });
+  statusEl.className="status-msg ok"; statusEl.textContent="Submitted: "+t.id;
+  tmFilter="OPEN"; document.querySelectorAll("#tmf_OPEN,#tmf_RESOLVED").forEach(function(b){b.classList.remove("active");}); document.getElementById("tmf_OPEN").classList.add("active");
+  tmOpen(t.id);
+  showToast("Ticket "+t.id+" submitted — it now sits in the SME queue.");
+  maybeAutoSmeReact(t.id);
+}
+
+function tmSendFollowUp(){
+  if(!currentId) return;
+  var input=document.getElementById("tmReplyInput");
+  var text=input.value.trim();
+  var statusEl=document.getElementById("tmReplyStatus");
+  if(!text){ statusEl.className="status-msg err"; statusEl.textContent="Please add a message."; return; }
+  var t=getTicket(currentId);
+  t.messages.push({role:"TEAMMATE",name:me.teammate,text:text,type:"TEAMMATE_FOLLOW_UP",ms:Date.now()});
+  input.value="";
+  statusEl.className="status-msg ok"; statusEl.textContent="Sent.";
+  renderCenter(); renderTmList();
+}
+
+/* ══════════════════════════════════════════════════════════
+ * SME SIDE
+ * ══════════════════════════════════════════════════════════ */
+function setSmeFilter(f){
+  smeFilter=f;
+  ["ALL","OPEN","OVERDUE","UNCLAIMED","RESOLVED"].forEach(function(x){ document.getElementById("smf_"+x).classList.remove("active"); });
+  document.getElementById("smf_"+f).classList.add("active");
+  renderSmeList();
+}
+function renderSmeList(){
+  var list=document.getElementById("smeList"); if(!list) return;
+  var filtered=tickets.filter(function(t){
+    var s=status(t);
+    if(smeFilter==="OPEN") return s==="OPEN";
+    if(smeFilter==="OVERDUE") return s==="OVERDUE";
+    if(smeFilter==="UNCLAIMED") return !t.claimedBy && s!=="RESOLVED";
+    if(smeFilter==="RESOLVED") return s==="RESOLVED";
+    return true;
+  });
+  filtered.sort(function(a,b){
+    var rank={OVERDUE:0,OPEN:1,RESOLVED:2};
+    var ra=rank[status(a)], rb=rank[status(b)];
+    if(ra!==rb) return ra-rb;
+    return b.createdMs-a.createdMs;
+  });
+  if(!filtered.length){ list.innerHTML='<div class="empty">Nothing here right now.</div>'; return; }
+  list.innerHTML=filtered.map(function(t){
+    var s=status(t);
+    var cls="t-card"+(t.id===currentId?" active":"")+(s==="OVERDUE"?" overdue":"");
+    return '<div class="'+cls+'" onclick="smeOpen(&quot;'+t.id+'&quot;)">'
+      +'<div class="t-top"><span class="t-id">'+t.id+'</span><span class="badge '+s.toLowerCase()+'">'+s+'</span></div>'
+      +'<div class="t-q">'+esc(t.question)+'</div>'
+      +'<div class="t-meta">'+(t.claimedBy?"Claimed: "+esc(t.claimedBy):"Unclaimed")+' · '+esc(t.category)+'</div>'
+      +'</div>';
+  }).join('');
+}
+function smeOpen(id){
+  currentId=id;
+  renderSmeList();
+  renderCenter();
+  var t=getTicket(id), s=status(t);
+  var res=s!=="RESOLVED";
+  document.getElementById("smeComposer").style.display = res ? "" : "none";
+  document.getElementById("claimBtn").disabled = !res || !!t.claimedBy;
+  document.getElementById("noteInput").disabled = false;
+  document.getElementById("noteBtn").disabled = false;
+  document.getElementById("resolveBtn").disabled = !res || !t.resolution;
+  document.getElementById("sendResolutionBtn").disabled = !res || !!t.resolution;
+  document.getElementById("sendFollowupBtn").disabled = !res || !t.resolution;
+}
+
+function smeClaim(){
+  if(!currentId) return;
+  var t=getTicket(currentId);
+  if(t.claimedBy) return;
+  t.claimedBy=me.sme;
+  t.messages.push({role:"SYSTEM",name:"SYSTEM",text:"Claimed by "+me.sme+".",type:"SYSTEM",ms:Date.now()});
+  document.getElementById("smeActionStatus").className="status-msg ok";
+  document.getElementById("smeActionStatus").textContent="Claimed.";
+  smeOpen(currentId);
+  renderSmeList();
+}
+
+function smeSendResolution(){
+  if(!currentId) return;
+  var input=document.getElementById("composerInput");
+  var text=input.value.trim();
+  var statusEl=document.getElementById("composerStatus");
+  if(!text){ statusEl.className="status-msg err"; statusEl.textContent="Resolution cannot be blank."; return; }
+  var t=getTicket(currentId);
+  if(!t.claimedBy){ t.claimedBy=me.sme; t.messages.push({role:"SYSTEM",name:"SYSTEM",text:"Claimed by "+me.sme+" (auto-claimed on resolution).",type:"SYSTEM",ms:Date.now()}); }
+  t.resolution=text;
+  t.resolutionMs=Date.now();
+  t.messages.push({role:"SME",name:t.claimedBy,text:text,type:"RESOLUTION",ms:Date.now()});
+  input.value="";
+  statusEl.className="status-msg ok"; statusEl.textContent="Resolution sent — mark resolved when ready.";
+  smeOpen(currentId); renderSmeList();
+}
+
+function smeSendFollowUp(){
+  if(!currentId) return;
+  var t=getTicket(currentId);
+  if(!t.resolution) return;
+  var input=document.getElementById("composerInput");
+  var text=input.value.trim();
+  var statusEl=document.getElementById("composerStatus");
+  if(!text){ statusEl.className="status-msg err"; statusEl.textContent="Follow-up cannot be blank."; return; }
+  t.messages.push({role:"SME",name:t.claimedBy||me.sme,text:text,type:"SME_FOLLOW_UP",ms:Date.now()});
+  input.value="";
+  statusEl.className="status-msg ok"; statusEl.textContent="Sent.";
+  renderCenter();
+}
+
+function smeSaveNote(){
+  if(!currentId) return;
+  var input=document.getElementById("noteInput");
+  var text=input.value.trim();
+  if(!text) return;
+  var t=getTicket(currentId);
+  t.messages.push({role:"SME",name:t.claimedBy||me.sme,text:text,type:"INTERNAL_NOTE",ms:Date.now()});
+  input.value="";
+  renderCenter();
+  showToast("Internal note saved — not visible to the teammate.");
+}
+
+function smeResolve(){
+  if(!currentId) return;
+  var t=getTicket(currentId);
+  if(!t.resolution) return;
+  t.resolved=true;
+  t.resolvedMs=Date.now();
+  t.messages.push({role:"SYSTEM",name:"SYSTEM",text:"Ticket marked RESOLVED.",type:"SYSTEM",ms:Date.now()});
+  document.getElementById("smeActionStatus").className="status-msg ok";
+  document.getElementById("smeActionStatus").textContent="Resolved.";
+  smeOpen(currentId); renderSmeList();
+  showToast(t.id+" marked resolved.");
+}
+
+/* ══════════════════════════════════════════════════════════
+ * CENTER PANE (shared rendering for both roles)
+ * ══════════════════════════════════════════════════════════ */
+function typeLabel(t){
+  return {QUESTION:"Question",RESOLUTION:"Resolution",SME_FOLLOW_UP:"SME Follow-up",
+    TEAMMATE_FOLLOW_UP:"Teammate Follow-up",INTERNAL_NOTE:"Internal Note",SYSTEM:"System"}[t]||t;
+}
+function badgeHtml(s){
+  return '<span class="badge '+s.toLowerCase()+'">'+s+'</span>';
+}
+function activityHtml(m,internalVisible){
+  if(m.type==="INTERNAL_NOTE" && !internalVisible) return "";
+  var cls="activity-type"+(m.type==="RESOLUTION"?" resolution":m.type==="INTERNAL_NOTE"?" note":"");
+  return '<div class="activity-item">'
+    +'<div class="activity-head"><span class="activity-sender">'+esc(m.name)+'</span>'
+    +'<span class="activity-time">'+fmtTime(m.ms)+'</span>'
+    +'<span class="'+cls+'">'+esc(typeLabel(m.type))+'</span>'
+    +(m.type==="INTERNAL_NOTE"?'<span style="font-size:9px;color:var(--muted);font-weight:700;">🔒 Internal</span>':'')
+    +'</div><div class="activity-text">'+escML(m.text)+'</div></div>';
+}
+function fh(label,val){ return '<div><div class="field-name">'+esc(label)+'</div><div class="field-value">'+esc(val||"—")+'</div></div>'; }
+
+function renderCenter(){
+  var t = currentId ? getTicket(currentId) : null;
+  var titleEl = document.getElementById(role==="SME"?"smeCenterTitle":"tmCenterTitle");
+  var badgeEl = document.getElementById(role==="SME"?"smeCenterBadge":"tmCenterBadge");
+  var bodyEl = document.getElementById(role==="SME"?"smeCenterBody":"tmCenterBody");
+  if(!titleEl) return;
+  if(!t){ titleEl.textContent="Select a ticket"; badgeEl.innerHTML=""; bodyEl.innerHTML='<div class="empty">Nothing selected.</div>'; return; }
+  var s=status(t);
+  titleEl.textContent=t.id;
+  badgeEl.innerHTML=badgeHtml(s);
+
+  var html='<div class="detail-card"><div class="dc-label">Ticket Info</div><div class="field-grid">'
+    +fh("Contact ID",t.contactId)+fh("Category",t.category)
+    +fh("SOP Followed",t.sop)+fh("Assistance",t.assistance)
+    +fh("Claimed By",t.claimedBy||(role==="TEAMMATE"?"Pending SME claim":"Unclaimed"))
+    +fh("Submitted",fmtShort(t.createdMs))
+    +'</div><div class="field-block"><div class="field-name">Summary</div><div class="field-value">'+esc(t.summary)+'</div></div>'
+    +'<div class="field-block"><div class="field-name">Question</div><div class="field-value">'+esc(t.question)+'</div></div>'
+    +'</div>';
+
+  if(t.resolution){
+    html+='<div class="detail-card resolution-box"><div class="resolution-tag">'+(role==="TEAMMATE"?"Official Answer":"Official Resolution")+'</div>'
+      +'<div class="field-value">'+escML(t.resolution)+'</div></div>';
+  } else {
+    html+='<div class="detail-card"><div class="dc-label">'+(role==="TEAMMATE"?"SME Answer":"Resolution")+'</div>'
+      +'<div class="field-value" style="color:var(--muted);">'+(role==="TEAMMATE"?"No SME answer yet — sit tight.":"No official resolution sent yet.")+'</div></div>';
+  }
+
+  html+='<div class="detail-card"><div class="dc-label">'+(role==="TEAMMATE"?"Ticket History":"Activity")+'</div>';
+  var visibleMsgs = t.messages.filter(function(m){ return role==="SME" || m.type!=="INTERNAL_NOTE"; });
+  if(!visibleMsgs.length) html+='<div class="field-value" style="color:var(--muted);">No activity yet.</div>';
+  else visibleMsgs.forEach(function(m){ html+=activityHtml(m, role==="SME"); });
+  html+='</div>';
+
+  bodyEl.innerHTML=html;
+
+  if(role==="TEAMMATE"){
+    document.getElementById("tmComposer").style.display = s==="RESOLVED" ? "none" : "";
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+ * A LITTLE LIFE: when a Teammate submits while "SME" would
+ * naturally be elsewhere, nothing auto-happens — this stays a
+ * manual, honest simulation of both sides of the same queue.
+ * (No auto-responses are injected; switch roles to answer it yourself.)
+ * ══════════════════════════════════════════════════════════ */
+function maybeAutoSmeReact(){ /* intentionally a no-op — see note above */ }
+
+seed();
+</script>
+</body>
+</html>
