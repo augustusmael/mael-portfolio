@@ -245,14 +245,15 @@
     white-space:normal;
   }
 
-  /* ===== Vertical accordion — mobile (same mechanic, flex-grow now drives height) ===== */
+  /* ===== Vertical accordion — mobile (scroll-driven, not hover-driven) ===== */
   @media(max-width:900px){
     .svc-suite{padding:0 24px 56px;}
     .svc-suite-eyebrow-label{margin-bottom:12px;}
+    .svc-suite-eyebrow-label span:last-child{display:none;} /* "Click to jump" implies hover; scroll drives it here */
 
     .svc-suite-row{
       flex-direction:column;
-      height:520px;
+      height:560px;
       gap:8px;
     }
     .svc-suite-panel{
@@ -261,18 +262,44 @@
       transition:flex-grow .55s cubic-bezier(.22,1,.36,1);
     }
 
-    /* arrow points down by default, flips to "open" diagonal when expanded */
+    /* Neutralize desktop hover/default rules on mobile — scroll-driven .js-active takes over entirely */
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1),
+    .svc-suite-row:hover .svc-suite-panel:hover{
+      flex-grow:1;
+    }
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-arrow,
+    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-arrow{
+      transform:rotate(90deg);
+    }
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-graphic,
+    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-graphic{
+      opacity:0;
+    }
+    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-body-desc,
+    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-body-desc{
+      opacity:0;max-height:0;
+    }
+
+    /* Collapsed state: ONLY the bottom tag is visible — title/eyebrow/desc fully hidden, no overlap */
     .svc-suite-arrow{transform:rotate(90deg);}
-    .svc-suite-row:not(:hover) .svc-suite-panel:nth-child(1) .svc-suite-arrow{transform:rotate(225deg);}
-    .svc-suite-row:hover .svc-suite-panel:hover .svc-suite-arrow{transform:rotate(225deg);}
-
-    .svc-suite-graphic{top:16px;left:18px;font-size:32px;}
-
-    .svc-suite-body{left:18px;right:18px;}
+    .svc-suite-graphic{top:16px;left:18px;font-size:32px;opacity:0;}
+    .svc-suite-body{
+      left:18px;right:18px;
+      opacity:0;max-height:0;overflow:hidden;pointer-events:none;
+      transition:opacity .3s ease, max-height .3s ease;
+    }
     .svc-suite-body-title{font-size:18px;}
     .svc-suite-body-desc{max-width:100%;}
-
     .svc-suite-tag{padding:9px 18px;font-size:10px;}
+
+    /* Active state, set by scroll-based JS below */
+    .svc-suite-panel.js-active{flex-grow:4;}
+    .svc-suite-panel.js-active .svc-suite-arrow{transform:rotate(225deg);}
+    .svc-suite-panel.js-active .svc-suite-graphic{opacity:.85;}
+    .svc-suite-panel.js-active .svc-suite-body{
+      opacity:1;max-height:220px;pointer-events:auto;
+    }
+    .svc-suite-panel.js-active .svc-suite-body-desc{opacity:1;max-height:120px;}
   }
 
   /* ===== Skill blocks ===== */
@@ -856,6 +883,38 @@
         });
       });
       document.addEventListener('click', ()=>{ items.forEach(i=> i.classList.remove('open')); });
+    })();
+
+    // Vertical accordion (mobile): expand each card as it scrolls through view
+    (function(){
+      const row = document.querySelector('.svc-suite-row');
+      if(!row) return;
+      const panels = Array.from(row.querySelectorAll('.svc-suite-panel'));
+      const mq = window.matchMedia('(max-width:900px)');
+      let observer = null;
+
+      function activate(panel){
+        panels.forEach(p => p.classList.toggle('js-active', p === panel));
+      }
+
+      function setup(){
+        if(observer) observer.disconnect();
+        panels.forEach(p => p.classList.remove('js-active'));
+        if(!mq.matches) return; // desktop keeps hover behavior only
+
+        panels[0].classList.add('js-active'); // first card open by default, matches desktop resting state
+
+        observer = new IntersectionObserver((entries)=>{
+          entries.forEach(entry=>{
+            if(entry.isIntersecting) activate(entry.target);
+          });
+        }, { root:null, rootMargin:'-45% 0px -45% 0px', threshold:0 });
+
+        panels.forEach(p => observer.observe(p));
+      }
+
+      setup();
+      mq.addEventListener('change', setup);
     })();
 
     // Mobile hamburger menu
